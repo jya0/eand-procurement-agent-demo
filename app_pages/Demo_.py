@@ -8,25 +8,31 @@ st.title("How It Works")
 
 st.divider()
 
-section_header(
-    "Input Your Criteria",
-    "Use our simple form to specify product requirements, budget, and delivery preferences."
-)
+# section_header(
+#     "Input Your Criteria",
+#     "Use our simple form to specify product requirements, budget, and delivery preferences."
+# )
 
-section_search()
+st.header("Input Your Criteria", divider=True)
+with st.expander("Use our simple form to specify product requirements, budget, and delivery preferences."):
+    section_search()
 
-section_header(
-    "Search for Suppliers",
-    "AMPA searches Alibaba's vast database to find matching suppliers instantly."
-)
+# section_header(
+#     "Search for Suppliers",
+#     "AMPA searches Alibaba's vast database to find matching suppliers instantly."
+# )
 
-section_search_results()
+st.header("Search for Suppliers", divider=True)
+with st.expander("AMPA searches Alibaba's vast database to find matching suppliers instantly."):
+    section_search_results()
 
-section_header(
-    "Evaluate with Chatbot",
-    "Ask our AI chatbot for recommendations or details, like \"Which supplier offers the best price-to-quality ratio?\""
-)
-with st.container():
+# section_header(
+#     "Evaluate with Chatbot",
+#     "Ask our AI chatbot for recommendations or details, like \"Which supplier offers the best price-to-quality ratio?\""
+# )
+
+st.header("Evaluate with Chatbot", divider=True)
+with st.expander("Ask our AI chatbot for recommendations or details, like \"Which supplier offers the best price-to-quality ratio?\""):
     chatbox()
 
 section_header(

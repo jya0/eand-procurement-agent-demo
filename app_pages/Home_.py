@@ -55,7 +55,8 @@ with tabs[1]:
             with st.expander("", expanded=True):
                 st.text("Deep search suppliers matching your criteria on B2B platforms such as Alibaba.")
                 st.image(
-                    image="https://media4.giphy.com/media/v1.Y2lkPTc5MGI3NjExaGhrb3kyZG5qMG44YTY2Z2Q4MmxweHB2cjRnNDQ0MmtwcTEzcGJxZyZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/wGKrkvHxZT6PVpw635/giphy.gif",
+                    # image="https://media4.giphy.com/media/v1.Y2lkPTc5MGI3NjExaGhrb3kyZG5qMG44YTY2Z2Q4MmxweHB2cjRnNDQ0MmtwcTEzcGJxZyZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/wGKrkvHxZT6PVpw635/giphy.gif",
+                    image="https://placehold.co/300x200",
                     caption="Supplier Search"
                 )
             st.subheader("LLM-Based Recommendation Filter")
@@ -88,7 +89,7 @@ with tabs[1]:
 with tabs[2]:
     st.header("Benefits")
 
-    benefit_cols = st.columns(4)
+    benefit_cols = st.columns(4, vertical_alignment="top")
 
     benefits = [
         {
@@ -115,8 +116,7 @@ with tabs[2]:
 
     for i, benefit in enumerate(benefits):
         with benefit_cols[i]:
-            st.image(benefit["icon"], width=100)
-            st.caption(benefit["title"])
+            st.image(benefit["icon"], width=100, caption=benefit["title"])
             st.subheader(benefit["title"], divider=True)
             st.text(benefit["description"])
 
@@ -133,7 +133,7 @@ with tabs[2]:
 
         with calc_col2:
             hourly_rate = st.slider(
-                "Average hourly rate of procurement staff ($)", 20, 100, 40
+                "Average hourly rate of procurement staff (AED)", 20, 100, 40
             )
 
         with calc_col3:
@@ -143,7 +143,7 @@ with tabs[2]:
 
         savings = current_hours * hourly_rate * (ampa_reduction / 100) * 52
 
-        st.metric("Estimated Annual Savings", f"${savings:,.2f}")
+        st.metric("Estimated Annual Savings", f"AED{savings:,.2f}")
 
 # Get Started Tab
 with tabs[3]:
