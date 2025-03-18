@@ -1,7 +1,8 @@
 import streamlit as st
 from src.components.card import shop_card
 from src.components.chatbox import chatbox
-# from src.components.testcard import shopy_card
+from data.supliers import all_supplier
+import math
 
 
 def section_header(headerText: str, captionText: str):
@@ -27,121 +28,59 @@ def section_search():
         submitted = st.form_submit_button("Search")
         
 
-
-
 def section_search_results():
-   col1, col2 = st.columns([4, 2])
-   shops = [
-      {
-         "image_url": "https://img2.chinadaily.com.cn/images/202410/15/670dca8fa310f1268d82d003.jpeg",
-         "supplier": "Fresh Mart",
-         "verified": "✓ Verified",
-         "price": "$20/hr",
-         "time": "2-5 days",
-         "age": "5 years",
-         "location": "Downtown"
-      },
-      {
-         "image_url": "https://img2.chinadaily.com.cn/images/202410/15/670dca8fa310f1268d82d003.jpeg",
-         "supplier": "Tech Haven",
-         "verified": "✓ Verified",
-         "price": "$35/hr",
-         "time": "1-3 days",
-         "age": "2 years",
-         "location": "Midtown"
-      },
-      {
-         "image_url": "https://img2.chinadaily.com.cn/images/202410/15/670dca8fa310f1268d82d003.jpeg",
-         "supplier": "Fashion Plus",
-         "verified": "ⓘ Pending Verification",
-         "price": "$28/hr",
-         "time": "3-7 days",
-         "age": "4 years",
-         "location": "Suburbs"
-      },
-      {
-         "image_url": "https://img2.chinadaily.com.cn/images/202410/15/670dca8fa310f1268d82d003.jpeg",
-         "supplier": "Fashion Plus",
-         "verified": "ⓘ Pending Verification",
-         "price": "$28/hr",
-         "time": "3-7 days",
-         "age": "4 years",
-         "location": "Suburbs"
-      },
-      {
-         "image_url": "https://img2.chinadaily.com.cn/images/202410/15/670dca8fa310f1268d82d003.jpeg",
-         "supplier": "Fashion Plus",
-         "verified": "ⓘ Pending Verification",
-         "price": "$28/hr",
-         "time": "3-7 days",
-         "age": "4 years",
-         "location": "Suburbs"
-      },
-      {
-         "image_url": "https://img2.chinadaily.com.cn/images/202410/15/670dca8fa310f1268d82d003.jpeg",
-         "supplier": "Fashion Plus",
-         "verified": "ⓘ Pending Verification",
-         "price": "$28/hr",
-         "time": "3-7 days",
-         "age": "4 years",
-         "location": "Suburbs"
-      },
-      {
-         "image_url": "https://img2.chinadaily.com.cn/images/202410/15/670dca8fa310f1268d82d003.jpeg",
-         "supplier": "Fashion Plus",
-         "verified": "ⓘ Pending Verification",
-         "price": "$28/hr",
-         "time": "3-7 days",
-         "age": "4 years",
-         "location": "Suburbs"
-      },
-      {
-         "image_url": "https://img2.chinadaily.com.cn/images/202410/15/670dca8fa310f1268d82d003.jpeg",
-         "supplier": "Fashion Plus",
-         "verified": "ⓘ Pending Verification",
-         "price": "$28/hr",
-         "time": "3-7 days",
-         "age": "4 years",
-         "location": "Suburbs"
-      }
-   ]
+    supplier = all_supplier
 
-   with col1:
-      st.header("Available Shops")
-      # with st.container():
-      #    st.write(shopy_card(
-      #       image_url="https://img2.chinadaily.com.cn/images/202410/15/670dca8fa310f1268d82d003.jpeg",
-      #       supplier="Awesome Shop",
-      #       verified="Verified Seller",
-      #       price="$50/hour",
-      #       time="2-4 days",
-      #       age="5 years",
-      #       location="New York"))
-         
-      #    st.write(shopy_card(
-      #       image_url="https://img2.chinadaily.com.cn/images/202410/15/670dca8fa310f1268d82d003.jpeg",
-      #       supplier="Awesome Shop",
-      #       verified="Verified Seller",
-      #       price="$50/hour",
-      #       time="2-4 days",
-      #       age="5 years",
-      #       location="New York"))
-      # cards_html = "".join([shop_card(**shop) for shop in shops])
-      # # listOfContainers
-      # # st.write()
-      # container_html = f"""
-      # <div style="
-      #       height: 800px;
-      #       overflow-y: scroll;
-      #       display: grid;
-      #       grid-template-columns: repeat(3, 1fr);
-      #       gap: 10px;
-      #       border: 1px solid #ccc;
-      #       padding: 10px;">
-      #    {cards_html}
-      # </div>
-      # """
-      # st.markdown(container_html, unsafe_allow_html=True)
+    st.header("Suppliers Listings")  # Fixed typo
+    
+    # Pagination controls
+    if 'page' not in st.session_state:
+        st.session_state.page = 0
+        
+    cards_per_page = 6  # 6 cards per page (2 rows of 3)
+    rows_per_page = cards_per_page // 3  # 2 rows per page
+    total_pages = math.ceil(len(supplier) / cards_per_page)
+    
+    # Get current page suppliers
+    start_idx = st.session_state.page * cards_per_page
+    end_idx = start_idx + cards_per_page
+    current_suppliers = supplier[start_idx:end_idx]
 
-   with col2:
-      chatbox()
+    with st.container(border=True):
+        # Display current page cards
+        for i in range(0, len(current_suppliers), 3):
+            cols = st.columns(3)
+            row_suppliers = current_suppliers[i:i+3]
+            
+            for col, sup in zip(cols, row_suppliers):
+                with col:
+                    with st.container(border=True):
+                        st.image(sup["image"])
+                        st.subheader(sup["name"])
+                        st.caption(f"📍 {sup['location']}")
+                        
+                        col1, col2 = st.columns([2, 1])
+                        with col1:
+                            st.metric("🚚 Delivery Time", sup["delivery_time"])
+                        with col2:
+                            status = "✅ Verified" if sup["verified"] else "❌ Not Verified"
+                            st.markdown(f"**{status}**")
+                        
+                        st.markdown(f"⭐ **Rating:** {sup['rating']}/5.0")
+        
+        # Pagination controls at bottom
+        col1, col2, col3 = st.columns([1, 2, 1])
+        with col2:
+            prev, _, next = st.columns([1, 2, 1])
+            
+            with prev:
+                if st.button("⬅️ Previous", disabled=st.session_state.page == 0):
+                    st.session_state.page -= 1
+                    st.rerun()
+            
+            with next:
+                if st.button("Next ➡️", disabled=st.session_state.page >= total_pages - 1):
+                    st.session_state.page += 1
+                    st.rerun()
+            
+            st.caption(f"Page {st.session_state.page + 1} of {total_pages}")
