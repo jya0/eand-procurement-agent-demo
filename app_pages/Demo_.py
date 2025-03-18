@@ -1,14 +1,11 @@
 import streamlit as st
 from src.components.sections import section_header, section_search, section_search_results
+from src.components.footer import streamlit_footer
 
-# Configure page settings
-# st.set_page_config(
-#     page_title="Shop & Chat Interface",
-#     page_icon="assets/eand-logo/small/White/e&-lockup_Enterprise_engl_vert_White_rgb.svg",
-#     layout="wide"
-# )
 
 st.title("How It Works")
+
+st.divider()
 
 section_header(
     "Input Your Criteria",
@@ -38,3 +35,6 @@ section_header(
     "Monitor and Finalize",
     "Track communications and negotiation progress in the real-time dashboard, then finalize deals with ease."
 )
+
+
+streamlit_footer()
