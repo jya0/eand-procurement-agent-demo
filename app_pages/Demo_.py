@@ -1,5 +1,6 @@
 import streamlit as st
 from src.components.sections import section_header, section_search, section_search_results
+from src.components.chatbox import chatbox
 
 # Configure page settings
 # st.set_page_config(
@@ -28,6 +29,8 @@ section_header(
     "Evaluate with Chatbot",
     "Ask our AI chatbot for recommendations or details, like \"Which supplier offers the best price-to-quality ratio?\""
 )
+with st.container():
+    chatbox()
 
 section_header(
     "Automate Communications",
