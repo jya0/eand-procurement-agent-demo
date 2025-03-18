@@ -2,17 +2,20 @@ import streamlit as st
 from streamlit_navigation_bar import st_navbar
 
 
+st.set_page_config(layout="wide")
+
 st.write("""
 <style>
 @font-face {
     font-family: 'Suisse';
     src: url('assets/fonts/Suisse/Suisse Int_l.ttf') format('ttf');
 }
-body {
+html {
     font-family: 'Suisse', sans-serif;
 }
 </style>
 """, unsafe_allow_html=True)
+
 
 
 ALL_PAGES = [
