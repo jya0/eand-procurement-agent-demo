@@ -1,5 +1,6 @@
 import streamlit as st
 from src.components.footer import streamlit_footer
+from src.components.roi import streamlit_roi
 
 
 header_col1, header_col2 = st.columns([1, 3], gap="large")
@@ -15,7 +16,9 @@ with header_col2:
     st.title("Streamline Your Procurement Process with AMPA")
     # st.title("Automatic Market Procurement Agent")
     st.text("Tired of spending up to 48 hours on manual procurement?")
-    st.text("Automatic Market Procurement Agent, or AMPA for short, communicates with suppliers for you and provides data-driven insights to save you time and money.")
+    st.text(
+        "Automatic Market Procurement Agent, or AMPA for short, communicates with suppliers for you and provides data-driven insights to save you time and money."
+    )
 
 st.divider()
 
@@ -46,43 +49,46 @@ with tabs[0]:
 with tabs[1]:
     st.header("Key Features", divider=True)
 
-
     with st.container():
         col1, col2 = st.columns(2, vertical_alignment="top")
 
         with col1:
             st.subheader("Criteria Based Search")
             with st.expander("", expanded=True):
-                st.text("Deep search suppliers matching your criteria on B2B platforms such as Alibaba.")
+                st.text(
+                    "Deep search suppliers matching your criteria on B2B platforms such as Alibaba."
+                )
                 st.image(
                     # image="https://media4.giphy.com/media/v1.Y2lkPTc5MGI3NjExaGhrb3kyZG5qMG44YTY2Z2Q4MmxweHB2cjRnNDQ0MmtwcTEzcGJxZyZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/wGKrkvHxZT6PVpw635/giphy.gif",
                     image="https://placehold.co/300x200",
-                    caption="Supplier Search"
+                    caption="Supplier Search",
                 )
             st.subheader("LLM-Based Recommendation Filter")
             with st.expander("", expanded=True):
-                st.text("Filter search results to get top rated suppliers based on your chat.")
+                st.text(
+                    "Filter search results to get top rated suppliers based on your chat."
+                )
                 st.image(
-                    image="https://placehold.co/300x200",
-                    caption="AI Recommendation"
+                    image="https://placehold.co/300x200", caption="AI Recommendation"
                 )
 
         with col2:
             st.subheader("Agentic AI Communicator")
             with st.expander("", expanded=True):
-                st.text("AI agentic system will contact and negotiate with new suppliers through email.")
+                st.text(
+                    "AI agentic system will contact and negotiate with new suppliers through email."
+                )
                 st.image(
-                    image="https://placehold.co/300x200",
-                    caption="Email Automation"
+                    image="https://placehold.co/300x200", caption="Email Automation"
                 )
             st.subheader("SRM Dashboard")
             with st.expander("", expanded=True):
-                st.text("Monitor procurement requests, supplier responses, and contract negotiation in one place.")
-                st.image(
-                    image="https://placehold.co/300x200",
-                    caption="Analytics Dashboard"
+                st.text(
+                    "Monitor procurement requests, supplier responses, and contract negotiation in one place."
                 )
-
+                st.image(
+                    image="https://placehold.co/300x200", caption="Analytics Dashboard"
+                )
 
 
 # Benefits Tab
@@ -120,30 +126,10 @@ with tabs[2]:
             st.subheader(benefit["title"], divider=True)
             st.text(benefit["description"])
 
-    # ROI Calculator
-    st.subheader("Calculate Your Potential ROI", divider=True)
 
-    with st.container():
-        calc_col1, calc_col2, calc_col3 = st.columns(3)
+    streamlit_roi()
 
-        with calc_col1:
-            current_hours = st.slider(
-                "Current hours spent on procurement per week", 1, 48, 20
-            )
 
-        with calc_col2:
-            hourly_rate = st.slider(
-                "Average hourly rate of procurement staff (AED)", 20, 100, 40
-            )
-
-        with calc_col3:
-            ampa_reduction = st.slider(
-                "Expected time reduction with AMPA (%)", 30, 90, 60
-            )
-
-        savings = current_hours * hourly_rate * (ampa_reduction / 100) * 52
-
-        st.metric("Estimated Annual Savings", f"AED{savings:,.2f}")
 
 # Get Started Tab
 with tabs[3]:
@@ -157,8 +143,6 @@ with tabs[3]:
         st.text_input("Phone")
         st.text_area("Specific Requirements")
         st.form_submit_button("Send")
-
-
 
 
 streamlit_footer()

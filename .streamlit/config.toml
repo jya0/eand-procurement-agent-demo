@@ -2,6 +2,8 @@
 primaryColor="#FF4B4B"
 backgroundColor="#F5F5F1"
 secondaryBackgroundColor="#4B0F1E"
+# backgroundColor="#4B0F1E"
+# secondaryBackgroundColor="#F5F5F1"
 textColor="#eb443f"
 # textColor="#e00700"
 font="sans serif"
