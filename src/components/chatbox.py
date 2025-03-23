@@ -1,41 +1,48 @@
 import streamlit as st
+from typing import Dict, List
 
 
-def mock_ai_response(user_input):
+def mock_ai_response(user_input: str) -> str:
+    """
+    Generate a mock AI response by reversing the input string.
+    
+    Args:
+        user_input (str): The user's input message
+        
+    Returns:
+        str: The AI's response
+    """
     return f"AI: {user_input[::-1]}"
 
 
-def chatbox():
-    st.header("Chat Assistant")
-
-    # Initialize messages if not present
+def chatbox() -> None:
+    """
+    Display and manage the chat interface.
+    Handles message history, user input, and AI responses.
+    """
+    # Set up the chat interface
+    st.title("Chat Assistant")
+    
     if "messages" not in st.session_state:
         st.session_state.messages = []
 
-    # Create a scrollable area for messages
-    messages_html = ""
-    for message in st.session_state.messages:
-        role = message["role"]
-        content = message["content"]
-        if role == "user":
-            messages_html += f'<div style="text-align: right; margin: 5px;"><b>You:</b> {content}</div>'
-        else:
-            messages_html += f'<div style="text-align: left; margin: 5px;"><b>Assistant:</b> {content}</div>'
+    messages_container = st.container()
 
-    # Render messages in a fixed-height scrollable div
-    st.markdown(
-        f"""
-        <div style="height: 40rem; overflow-y: scroll; border: 1px solid #ccc; padding: 10px;">
-            {messages_html}
-        </div>
-        """,
-        unsafe_allow_html=True,
-    )
-
-    # Chat input remains fixed below the scrollable area
-    user_input = st.chat_input("Type your message here...")
-    if user_input:
-        st.session_state.messages.append({"role": "user", "content": user_input})
-        ai_response = mock_ai_response(user_input)
-        st.session_state.messages.append({"role": "assistant", "content": ai_response})
+    if prompt := st.chat_input("Type your message here..."):
+        st.session_state.messages.append({
+            "role": "user",
+            "content": prompt
+        })
+        
+        ai_response = mock_ai_response(prompt)
+        st.session_state.messages.append({
+            "role": "assistant",
+            "content": ai_response
+        })
+        
         st.rerun()
+
+    with messages_container:
+        for message in st.session_state.messages:
+            with st.chat_message(message["role"]):
+                st.write(message["content"])
