@@ -1,6 +1,6 @@
 import streamlit as st
 from src.components.footer import streamlit_footer
-from src.components.roi import streamlit_roi_ver2, streamlit_roi_ver3
+from src.components.roi import streamlit_roi_ver2, streamlit_roi_ver3, streamlit_roi_ver4
 
 
 header_col1, header_col2 = st.columns([1, 3], gap="large")
@@ -134,21 +134,9 @@ with tabs[2]:
             st.subheader(benefit["title"], divider=True, anchor=False)
             st.info(benefit["description"])
 
-    streamlit_roi_ver2()
-    streamlit_roi_ver3()
-    st.code(
-        f"Hourly Rate = Monthly Salary ÷ Working Hours = {10000} ÷ {100} = AED {100:.2f}",
-        line_numbers=True,
-        wrap_lines=True,
-    )
-    st.markdown(
-        f":green[:blue-background[Hourly Rate = Monthly Salary ÷ Working Hours = {10000} ÷ {100} = AED {100:.2f}]]",
-        help="click to go to Get In Touch",
-    )
-    st.success("This is a success message!", icon="✅")
-    st.info("This is a purely informational message", icon="ℹ️")
-    st.markdown("[Go To Get In Touch](#get-in-touch)")
-
+    # streamlit_roi_ver2()
+    # streamlit_roi_ver3()
+    streamlit_roi_ver4()
 
 # Get Started Tab
 with tabs[3]:
@@ -157,8 +145,8 @@ with tabs[3]:
     col1, col2 = st.columns([3, 1])
     with col1:
         with st.form("get_in_touch"):
+            st.text_input("Name")
             st.text_input("Company Name")
-            st.text_input("Contact Person")
             st.text_input("Email")
             st.text_input("Phone")
             st.text_area("Specific Requirements")

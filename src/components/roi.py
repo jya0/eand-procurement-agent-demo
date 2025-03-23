@@ -410,8 +410,27 @@ def streamlit_roi_ver3():
                     st.text(
                         "more time to focus on strategic supplier relationships and negotiation."
                     )
+                st.code(
+                    f"Hourly Rate = Monthly Salary ÷ Working Hours = {10000} ÷ {100} = AED {100:.2f}",
+                    line_numbers=True,
+                    wrap_lines=True,
+                )
+                st.markdown(
+                    f":green[:blue-background[Hourly Rate = Monthly Salary ÷ Working Hours = {10000} ÷ {100} = AED {100:.2f}]]",
+                    help="click to go to Get In Touch",
+                )
+                st.success("This is a success message!", icon="✅")
+                st.info("This is a purely informational message", icon="ℹ️")
+                st.markdown("[Go To Get In Touch](#get-in-touch)")
+                # ROI information
+                st.info(
+                    "Note: For a complete ROI calculation including payback period, please contact our sales team for AMPA pricing information."
+                )
 
-            # ROI information
-            st.info(
-                "Note: For a complete ROI calculation including payback period, please contact our sales team for AMPA pricing information."
-            )
+
+def streamlit_roi_ver4():
+    st.subheader("Calculate Your Potential ROI", divider=True)
+
+    st.subheader("Monetary Perspective", anchor=None)
+
+    st.subheader("Time Perspective", anchor=None)
