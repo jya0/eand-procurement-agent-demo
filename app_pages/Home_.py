@@ -1,15 +1,16 @@
 import streamlit as st
 from src.components.footer import streamlit_footer
-from src.components.roi import streamlit_roi
+from src.components.roi import streamlit_roi_ver2, streamlit_roi_ver3
 
 
 header_col1, header_col2 = st.columns([1, 3], gap="large")
 
 with header_col1:
     st.image(
-        image="assets/images/ampa-logos/ampa-square.png",
+        image="assets/images/ampa-logos/ampa-square-ver2.png",
         use_container_width=True,
-        caption="AMPA Logo",
+        output_format="JPEG",
+        # caption="AMPA Logo",
     )
 
 with header_col2:
@@ -43,106 +44,131 @@ with tabs[0]:
             image="assets/images/ampa-hla/HLA-AMPA-Investor-with-border-white.png",
             use_container_width=True,
             caption="Procurement Process Visualization",
+            output_format="PNG",
         )
 
 # Features Tab
 with tabs[1]:
     st.header("Key Features", divider=True)
 
-    with st.container():
-        col1, col2 = st.columns(2, vertical_alignment="top")
+    features = [
+        {
+            "title": "Dynamic Filtering Search",
+            "description": "Faceted search to find suppliers across several B2B platforms such as Alibaba.",
+            "image": "assets/images/ampa-features/ampa-feature-search.gif",
+            "caption": "Supplier Search",
+        },
+        {
+            "title": "LLM-powered Assistant",
+            "description": "Chat with an assistant and effortlessly re-rank the most relevant suppliers.",
+            "image": "assets/images/ampa-features/ampa-feature-llm.gif",
+            "caption": "Chat Assistant",
+        },
+        {
+            "title": "Agentic AI Communicator",
+            "description": "AI agentic system will contact and negotiate with new suppliers through email.",
+            "image": "assets/images/ampa-features/ampa-feature-agent.gif",
+            "caption": "Email Automation",
+        },
+        {
+            "title": "SRM Dashboard",
+            "description": "Monitor procurement requests, supplier responses, and contract negotiation in one place.",
+            "image": "assets/images/ampa-features/ampa-feature-dashboard.gif",
+            "caption": "Admin Dashboard",
+        },
+    ]
 
-        with col1:
-            st.subheader("Criteria Based Search")
-            with st.expander("", expanded=True):
-                st.text(
-                    "Deep search suppliers matching your criteria on B2B platforms such as Alibaba."
-                )
-                st.image(
-                    # image="https://media4.giphy.com/media/v1.Y2lkPTc5MGI3NjExaGhrb3kyZG5qMG44YTY2Z2Q4MmxweHB2cjRnNDQ0MmtwcTEzcGJxZyZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/wGKrkvHxZT6PVpw635/giphy.gif",
-                    image="https://placehold.co/300x200",
-                    caption="Supplier Search",
-                )
-            st.subheader("LLM-Based Recommendation Filter")
-            with st.expander("", expanded=True):
-                st.text(
-                    "Filter search results to get top rated suppliers based on your chat."
-                )
-                st.image(
-                    image="https://placehold.co/300x200", caption="AI Recommendation"
-                )
+    col1, col2 = st.columns(2, vertical_alignment="top", gap="large")
+    columns = [col1, col1, col2, col2]
 
-        with col2:
-            st.subheader("Agentic AI Communicator")
-            with st.expander("", expanded=True):
-                st.text(
-                    "AI agentic system will contact and negotiate with new suppliers through email."
-                )
+    for i, feature in enumerate(features):
+        with columns[i]:
+            st.subheader(feature["title"], divider=True)
+            with st.container(border=True):
+                st.success(feature["description"])
                 st.image(
-                    image="https://placehold.co/300x200", caption="Email Automation"
-                )
-            st.subheader("SRM Dashboard")
-            with st.expander("", expanded=True):
-                st.text(
-                    "Monitor procurement requests, supplier responses, and contract negotiation in one place."
-                )
-                st.image(
-                    image="https://placehold.co/300x200", caption="Analytics Dashboard"
+                    image=feature["image"],
+                    output_format="GIF",
+                    use_container_width=True,
+                    caption=feature["caption"],
                 )
 
 
 # Benefits Tab
 with tabs[2]:
-    st.header("Benefits")
+    st.header("Benefits", divider=True)
 
-    benefit_cols = st.columns(4, vertical_alignment="top")
+    benefit_cols = st.columns(4, vertical_alignment="top", gap="large")
 
     benefits = [
         {
             "title": "Increased Efficiency",
-            "description": "Significantly reduce the time and effort spent on procurement.",
-            "icon": "https://placehold.co/100x100",
+            "description": "Significantly reduce manual effort spent on procurement search.",
+            "icon": "assets/images/ampa-benefits/ampa-benefit-efficiency.gif",
         },
         {
             "title": "Cost Savings",
             "description": "Optimize supplier selection to secure the best prices and terms.",
-            "icon": "https://placehold.co/100x100",
+            "icon": "assets/images/ampa-benefits/ampa-benefit-cost.gif",
         },
         {
             "title": "Better Decision-Making",
-            "description": "Leverage data and AI insights to choose the right suppliers.",
-            "icon": "https://placehold.co/100x100",
+            "description": "Leverage reasoning AI models with real time data to meet search criteria.",
+            "icon": "assets/images/ampa-benefits/ampa-benefit-decision.gif",
         },
         {
-            "title": "Enhanced Relationships",
-            "description": "Streamline communications for smoother, more productive interactions.",
-            "icon": "https://placehold.co/100x100",
+            "title": "Wider Supplier Network",
+            "description": "Outreach to more suppliers online for unlimited opportunities.",
+            "icon": "assets/images/ampa-benefits/ampa-benefit-agreement.gif",
         },
     ]
 
     for i, benefit in enumerate(benefits):
         with benefit_cols[i]:
-            st.image(benefit["icon"], width=100, caption=benefit["title"])
-            st.subheader(benefit["title"], divider=True)
-            st.text(benefit["description"])
+            st.image(
+                image=benefit["icon"],
+                # width=100,
+                output_format="GIF",
+                # use_container_width=True,
+            )
+            st.subheader(benefit["title"], divider=True, anchor=False)
+            st.info(benefit["description"])
 
-
-    streamlit_roi()
-
+    streamlit_roi_ver2()
+    streamlit_roi_ver3()
+    st.code(
+        f"Hourly Rate = Monthly Salary ÷ Working Hours = {10000} ÷ {100} = AED {100:.2f}",
+        line_numbers=True,
+        wrap_lines=True,
+    )
+    st.markdown(
+        f":green[:blue-background[Hourly Rate = Monthly Salary ÷ Working Hours = {10000} ÷ {100} = AED {100:.2f}]]",
+        help="click to go to Get In Touch",
+    )
+    st.success("This is a success message!", icon="✅")
+    st.info("This is a purely informational message", icon="ℹ️")
+    st.markdown("[Go To Get In Touch](#get-in-touch)")
 
 
 # Get Started Tab
 with tabs[3]:
     st.header("Get In Touch", divider=True)
     st.text("Ready to transform your procurement process?")
-
-    with st.form("get_in_touch"):
-        st.text_input("Company Name")
-        st.text_input("Contact Person")
-        st.text_input("Email")
-        st.text_input("Phone")
-        st.text_area("Specific Requirements")
-        st.form_submit_button("Send")
+    col1, col2 = st.columns([3, 1])
+    with col1:
+        with st.form("get_in_touch"):
+            st.text_input("Company Name")
+            st.text_input("Contact Person")
+            st.text_input("Email")
+            st.text_input("Phone")
+            st.text_area("Specific Requirements")
+            st.form_submit_button("Send")
+    with col2:
+        st.image(
+            image="assets/images/misc/500x1440-px.svg",
+            use_container_width=True,
+            # output_format="PNG",
+        )
 
 
 streamlit_footer()
