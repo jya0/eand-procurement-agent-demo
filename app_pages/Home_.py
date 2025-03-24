@@ -14,7 +14,7 @@ with header_col1:
     )
 
 with header_col2:
-    st.title("Streamline Your Procurement Process with AMPA")
+    st.title("Streamline Your Supplier Discovery Process with AMPA")
     # st.title("Automatic Market Procurement Agent")
     st.text("Tired of spending up to 48 hours on manual procurement?")
     st.text(
