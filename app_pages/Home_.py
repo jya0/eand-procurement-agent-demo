@@ -72,7 +72,7 @@ with tabs[1]:
         },
         {
             "title": "SRM Dashboard",
-            "description": "Monitor procurement requests, supplier responses, and contract negotiation in one place.",
+            "description": "Monitor supplier responses, automated document drafts and more.",
             "image": "assets/images/ampa-features/ampa-feature-dashboard.gif",
             "caption": "Admin Dashboard",
         },
@@ -85,7 +85,7 @@ with tabs[1]:
         with columns[i]:
             st.subheader(feature["title"], divider=True)
             with st.container(border=True):
-                st.success(feature["description"])
+                st.info(feature["description"])
                 st.image(
                     image=feature["image"],
                     output_format="GIF",
@@ -98,41 +98,62 @@ with tabs[1]:
 with tabs[2]:
     st.header("Benefits", divider=True)
 
-    benefit_cols = st.columns(4, vertical_alignment="top", gap="large")
 
     benefits = [
         {
             "title": "Increased Efficiency",
             "description": "Significantly reduce manual effort spent on procurement search.",
-            "icon": "assets/images/ampa-benefits/ampa-benefit-efficiency.gif",
+            "icon": "assets/images/ampa-benefits/ampa-benefit-efficiency-large-fast.gif",
         },
         {
             "title": "Cost Savings",
             "description": "Optimize supplier selection to secure the best prices and terms.",
-            "icon": "assets/images/ampa-benefits/ampa-benefit-cost.gif",
+            "icon": "assets/images/ampa-benefits/ampa-benefit-cost-large-fast.gif",
         },
         {
             "title": "Better Decision-Making",
             "description": "Leverage reasoning AI models with real time data to meet search criteria.",
-            "icon": "assets/images/ampa-benefits/ampa-benefit-decision.gif",
+            "icon": "assets/images/ampa-benefits/ampa-benefit-decision-large-fast.gif",
         },
         {
             "title": "Wider Supplier Network",
             "description": "Outreach to more suppliers online for unlimited opportunities.",
-            "icon": "assets/images/ampa-benefits/ampa-benefit-agreement.gif",
+            "icon": "assets/images/ampa-benefits/ampa-benefit-network-large-fast.gif",
         },
     ]
-
+    cols = st.columns(len(benefits), vertical_alignment="bottom", gap="medium")
     for i, benefit in enumerate(benefits):
-        with benefit_cols[i]:
-            st.image(
-                image=benefit["icon"],
-                # width=100,
-                output_format="GIF",
-                # use_container_width=True,
-            )
+        with cols[i]:
+            # header = benefit["title"]
+            # st.markdown(f"#### {header}")
             st.subheader(benefit["title"], divider=True, anchor=False)
-            st.info(benefit["description"])
+    cols = st.columns(len(benefits), vertical_alignment="bottom", gap="medium")
+    for i, benefit in enumerate(benefits):
+        with cols[i]:
+            with st.columns([1, 2, 1])[1]:
+                st.image(
+                    image=benefit["icon"],
+                    output_format="GIF",
+                    use_container_width=True,
+                )
+            # with st.popover("click me!"):
+            #     st.info(benefit["description"])
+    cols = st.columns(len(benefits), vertical_alignment="top", gap="medium")
+    for i, benefit in enumerate(benefits):
+        with cols[i]:
+            st.success(benefit["description"], icon=":material/verified:")
+
+    # for i, benefit in enumerate(benefits):
+    #     benefit_cols = st.columns(4, vertical_alignment="top", gap="large")
+    #     with benefit_cols[i]:
+    #         st.image(
+    #             image=benefit["icon"],
+    #             # width=100,
+    #             output_format="GIF",
+    #             # use_container_width=True,
+    #         )
+    #         st.subheader(benefit["title"], divider=True, anchor=False)
+    #         st.info(benefit["description"])
 
     # streamlit_roi_ver2()
     # streamlit_roi_ver3()
