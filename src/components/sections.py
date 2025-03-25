@@ -30,8 +30,8 @@ def section_search() -> None:
         col1, col2 = st.columns(2, gap="large")
         
         with col1:
-            st.text_input("Name")
-            st.time_input("Time")
+            st.text_input("Product name")
+            st.time_input("Expected shipment time")
             st.text_input("Location")
             
         with col2:
@@ -62,7 +62,7 @@ def display_supplier_card(supplier: Dict[str, Any]) -> None:
         st.caption(f"📍 {supplier['location']}")
         
         # Display metrics in two columns
-        col1, col2 = st.columns([2, 1])
+        col1, col2 = st.columns([2, 1], gap="small")
         with col1:
             st.metric("🚚 Delivery Time", supplier["delivery_time"])
         with col2:
