@@ -1,6 +1,6 @@
 import streamlit as st
 from src.components.footer import streamlit_footer
-from src.components.roi import streamlit_roi_ver2, streamlit_roi_ver3, streamlit_roi_ver4
+from src.components.roi import streamlit_roi_ver2, streamlit_roi_ver3, streamlit_roi_ver4, streamlit_roi_ver5, streamlit_roi_ver6, streamlit_roi_ver7
 
 
 header_col1, header_col2 = st.columns([1, 3], gap="large")
@@ -157,7 +157,9 @@ with tabs[2]:
 
     # streamlit_roi_ver2()
     # streamlit_roi_ver3()
-    streamlit_roi_ver4()
+    # streamlit_roi_ver5()
+    # streamlit_roi_ver6()
+    streamlit_roi_ver7()
 
 # Get Started Tab
 with tabs[3]:
