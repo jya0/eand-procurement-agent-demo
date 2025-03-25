@@ -429,8 +429,138 @@ def streamlit_roi_ver3():
 
 
 def streamlit_roi_ver4():
-    st.subheader("Calculate Your Potential ROI", divider=True)
+    st.subheader("Procurement ROI Calculator")
 
-    st.subheader("Monetary Perspective", anchor=None)
+    with st.form(key="procurement_roi_form"):
+        st.header("Monetary Perspective")
+        col_m1, col_m2 = st.columns(2)
+        with col_m1:
+            current_contract_value = st.number_input(
+                "Current Annual Contract Value (AED)",
+                min_value=100000,
+                max_value=100000000,
+                value=10000000,
+                step=100000,
+            )
+        with col_m2:
+            new_contract_value = st.number_input(
+                "Annual New Suppliers' Contract Value (AED)",
+                min_value=100000,
+                max_value=100000000,
+                value=9000000,
+                step=100000,
+            )
 
-    st.subheader("Time Perspective", anchor=None)
+        st.markdown("---")
+        st.header("Time Perspective")
+        st.markdown("### Procurement Event Time Savings")
+        col_t1, col_t2 = st.columns(2)
+        with col_t1:
+            manual_time = st.number_input(
+                "Manual Time per Supplier Event (hours)",
+                min_value=0.0,
+                max_value=20.0,
+                value=7.3,
+                step=0.1,
+            )
+            ai_time = st.number_input(
+                "AI-Assisted Time per Supplier Event (hours)",
+                min_value=0.0,
+                max_value=5.0,
+                value=0.14,
+                step=0.1,
+            )
+            events_per_year = st.number_input(
+                "Procurement Events per Year",
+                min_value=1,
+                max_value=1000,
+                value=264,
+                step=1,
+            )
+        with col_t2:
+            setup_time = st.number_input(
+                "Setup & Configuration Time (hours, one-time in first year)",
+                min_value=0,
+                max_value=100,
+                value=40,
+                step=1,
+            )
+            oversight_time = st.number_input(
+                "Oversight & Review Time per Cycle (hours)",
+                min_value=0,
+                max_value=10,
+                value=2,
+                step=1,
+            )
+            cycles_per_year = st.number_input(
+                "Number of Cycles/Orders per Year",
+                min_value=1,
+                max_value=100,
+                value=12,
+                step=1,
+            )
+            working_hours_per_day = st.number_input(
+                "Working Hours per Day (for Operational Savings)",
+                min_value=1,
+                max_value=24,
+                value=8,
+                step=1,
+            )
+            operational_days_saved = st.number_input(
+                "Operational Days Saved per Order",
+                min_value=0,
+                max_value=30,
+                value=5,
+                step=1,
+            )
+
+        submitted = st.form_submit_button("Calculate ROI")
+
+        if submitted:
+            # Monetary calculations
+            cost_savings = current_contract_value - new_contract_value
+            monetary_roi = (
+                (cost_savings / current_contract_value) * 100
+                if current_contract_value > 0
+                else 0
+            )
+
+            # Time calculations: Procurement events
+            time_saved_per_event = manual_time - ai_time
+            total_procurement_time_saved = time_saved_per_event * events_per_year
+
+            # Time calculations: Operational savings
+            operational_time_saved = (
+                operational_days_saved * working_hours_per_day * cycles_per_year
+            )
+
+            total_time_saved = total_procurement_time_saved + operational_time_saved
+
+            # Time efficiency ratios
+            first_year_investment = setup_time + (oversight_time * cycles_per_year)
+            subsequent_years_investment = oversight_time * cycles_per_year
+
+            efficiency_ratio_first_year = (
+                total_time_saved / first_year_investment
+                if first_year_investment > 0
+                else 0
+            )
+            efficiency_ratio_subsequent = (
+                total_time_saved / subsequent_years_investment
+                if subsequent_years_investment > 0
+                else 0
+            )
+
+            st.success("ROI Analysis Complete")
+            col_result1, col_result2 = st.columns(2)
+            with col_result1:
+                st.metric("Monetary Cost Savings", f"AED {cost_savings:,.2f}")
+                st.metric("Monetary ROI", f"{monetary_roi:.2f}%")
+            with col_result2:
+                st.metric("Annual Time Saved", f"{total_time_saved:,.1f} hours")
+                st.text(
+                    f"Time Efficiency Ratio (First Year): {efficiency_ratio_first_year:.2f}"
+                )
+                st.text(
+                    f"Time Efficiency Ratio (Subsequent Years): {efficiency_ratio_subsequent:.2f}"
+                )
