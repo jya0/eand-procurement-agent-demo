@@ -57,7 +57,7 @@ def display_supplier_card(supplier: Dict[str, Any]) -> None:
     """
     with st.container(border=True):
         # Display supplier image and name
-        st.image(supplier["image"])
+        safe_load_image(supplier["image"])
         st.subheader(supplier["name"])
         st.caption(f"📍 {supplier['location']}")
         
@@ -147,3 +147,11 @@ def section_search_results() -> None:
     
     display_suppliers_grid(current_suppliers)
     setup_pagination(total_pages)
+
+
+def safe_load_image(image_path: str) -> None:
+    try:
+        st.image(image_path, use_container_width=True)
+    except Exception as e:
+        st.error(f"Failed to load image: {str(e)}")
+        st.image("assets/images/placeholder.png", use_container_width=True)
