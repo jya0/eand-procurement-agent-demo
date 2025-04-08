@@ -1,41 +1,110 @@
 import streamlit as st
 from data.supliers import all_supplier
+from src.components.ebay_api import EbayAPI
 import math
 from typing import List, Dict, Any, Callable
 
-# Constants
-CARDS_PER_PAGE: int = 6
-SORT_OPTIONS: Dict[str, Callable[[Dict[str, Any]], Any]] = {
-    "Price (Low to High)": lambda x: x["price"],
-    "Price (High to Low)": lambda x: -x["price"],
-    "Rating (High to Low)": lambda x: -x["rating"],
-    "Delivery Time (Fastest)": lambda x: int(x["delivery_time"].split("-")[0])
+CARDS_PER_PAGE = 6
+IMAGE_WIDTH = 300
+IMAGE_HEIGHT = 200
+
+SORT_OPTIONS = {
+    "Price (Low to High)": lambda x: float(x.get("price", 0)),
+    "Price (High to Low)": lambda x: -float(x.get("price", 0)),
+    "Rating (High to Low)": lambda x: -float(x.get("rating", 0)),
+    "Delivery Time (Fastest)": lambda x: int(x.get("delivery_time", "0-0").split("-")[0])
 }
 
-def section_header(header_text: str, caption_text: str) -> None:
-    """
-    Display a section header with a caption.
-    
-    Args:
-        header_text (str): The main header text
-        caption_text (str): The caption text below the header
-    """
-    with st.container():
-        st.header(header_text, divider=True)
-        st.caption(caption_text)
+ebay_api = EbayAPI()
 
-def section_search() -> None:
-    """Display a search form with various input fields."""
+def show_header(title: str, subtitle: str) -> None:
+    with st.container():
+        st.header(title, divider=True)
+        st.caption(subtitle)
+
+def show_image(image_path: str) -> None:
+    try:
+        st.image(image_path, use_container_width=True)
+    except Exception:
+        st.image("assets/images/placeholder.png")
+
+def show_ebay_card(item: Dict[str, Any]) -> None:
+    with st.container(border=True):
+        with st.container():
+            show_image(item["image"])
+        
+        with st.container():
+            st.subheader(item["title"])
+            st.caption(f"👤 {item['seller']}")
+            
+            col1, col2 = st.columns([2, 1], gap="small")
+            with col1:
+                st.metric("💰 Price", f"${item['price']}")
+            with col2:
+                st.markdown(f"**{item['condition']}**")
+                
+            st.markdown(f"[View on eBay]({item['url']})")
+
+def show_supplier_card(supplier: Dict[str, Any]) -> None:
+    with st.container(border=True):
+        with st.container():
+            show_image(supplier["image"])
+        with st.container():
+            st.subheader(supplier["name"])
+            st.caption(f"📍 {supplier['location']}")
+            
+            col1, col2 = st.columns([2, 1], gap="small")
+            with col1:
+                st.metric("🚚 Delivery Time", supplier["delivery_time"])
+            with col2:
+                status = "✅ Verified" if supplier["verified"] else "❌ Not Verified"
+                st.markdown(f"**{status}**")
+                st.metric("💰 Price", f"${supplier['price']:.2f}")
+                
+            st.markdown(f"⭐ **Rating:** {supplier['rating']}/5.0")
+
+def show_items_grid(items: List[Dict[str, Any]]) -> None:
+    with st.container(border=True):
+        for i in range(0, len(items), 3):
+            cols = st.columns(3)
+            row_items = items[i:i + 3]
+            
+            for col, item in zip(cols, row_items):
+                with col:
+                    show_ebay_card(item) if "title" in item else show_supplier_card(item)
+
+def show_pagination(current_page: int, total_pages: int) -> None:
+    col1, col2, col3 = st.columns([1, 2, 1])
+    with col2:
+        prev, _, next = st.columns([1, 2, 1])
+        
+        with prev:
+            if st.button("⬅️ Previous", disabled=current_page == 0):
+                st.session_state.page -= 1
+                st.rerun()
+                
+        with next:
+            if st.button("Next ➡️", disabled=current_page >= total_pages - 1):
+                st.session_state.page += 1
+                st.rerun()
+                
+        st.caption(f"Page {current_page + 1} of {total_pages}")
+
+def sort_items(items: List[Dict[str, Any]], sort_by: str) -> List[Dict[str, Any]]:
+    sort_key = SORT_OPTIONS.get(sort_by, SORT_OPTIONS["Price (Low to High)"])
+    return sorted(items, key=sort_key)
+
+def show_search_form() -> None:
     with st.form(key="search_form"):
         col1, col2 = st.columns(2, gap="large")
         
         with col1:
-            st.text_input("Product name")
+            search_query = st.text_input("Product name")
             st.time_input("Expected shipment time")
             st.text_input("Location")
             
         with col2:
-            st.slider(
+            max_price = st.slider(
                 "Price",
                 min_value=0.0,
                 max_value=1000.0,
@@ -46,112 +115,33 @@ def section_search() -> None:
             st.radio("Verify", options=["Yes", "No"])
             st.number_input("Age", min_value=0)
             
-        st.form_submit_button("Search")
+        if st.form_submit_button("Search") and search_query:
+            try:
+                st.session_state.page = 0
+                items = ebay_api.search_items(search_query)
+                st.session_state.search_results = [ebay_api.format_item(item) for item in items]
+                st.session_state.has_search = True
+            except Exception as e:
+                st.error(f"Error searching eBay: {str(e)}")
 
-def display_supplier_card(supplier: Dict[str, Any]) -> None:
-    """
-    Display a single supplier card with all relevant information.
-    
-    Args:
-        supplier (Dict[str, Any]): Dictionary containing supplier information
-    """
-    with st.container(border=True):
-        # Display supplier image and name
-        safe_load_image(supplier["image"])
-        st.subheader(supplier["name"])
-        st.caption(f"📍 {supplier['location']}")
-        
-        # Display metrics in two columns
-        col1, col2 = st.columns([2, 1], gap="small")
-        with col1:
-            st.metric("🚚 Delivery Time", supplier["delivery_time"])
-        with col2:
-            status = "✅ Verified" if supplier["verified"] else "❌ Not Verified"
-            st.markdown(f"**{status}**")
-            st.metric("💰 Price", f"${supplier['price']:.2f}")
-            
-        st.markdown(f"⭐ **Rating:** {supplier['rating']}/5.0")
-
-def display_suppliers_grid(suppliers: List[Dict[str, Any]]) -> None:
-    """
-    Display a grid of supplier cards (3 cards per row).
-    
-    Args:
-        suppliers (List[Dict[str, Any]]): List of supplier dictionaries
-    """
-    with st.container(border=True):
-        for i in range(0, len(suppliers), 3):
-            cols = st.columns(3)
-            row_suppliers = suppliers[i:i + 3]
-            
-            for col, supplier in zip(cols, row_suppliers):
-                with col:
-                    display_supplier_card(supplier)
-
-
-def setup_pagination(total_pages: int) -> None:
-    """
-    Display pagination controls for navigating through pages.
-    
-    Args:
-        total_pages (int): Total number of pages available
-    """
-    col1, col2, col3 = st.columns([1, 2, 1])
-    with col2:
-        prev, _, next = st.columns([1, 2, 1])
-        
-        with prev:
-            if st.button("⬅️ Previous", disabled=st.session_state.page == 0):
-                st.session_state.page -= 1
-                st.rerun()
-                
-        with next:
-            if st.button("Next ➡️", disabled=st.session_state.page >= total_pages - 1):
-                st.session_state.page += 1
-                st.rerun()
-                
-        st.caption(f"Page {st.session_state.page + 1} of {total_pages}")
-
-def get_sorted_suppliers(suppliers: List[Dict[str, Any]], sort_by: str) -> List[Dict[str, Any]]:
-    """
-    Sort suppliers based on selected criteria.
-    
-    Args:
-        suppliers (List[Dict[str, Any]]): List of supplier dictionaries
-        sort_by (str): Sorting criteria from SORT_OPTIONS
-        
-    Returns:
-        List[Dict[str, Any]]: Sorted list of suppliers
-    """
-    sort_key = SORT_OPTIONS.get(sort_by, SORT_OPTIONS["Price (Low to High)"])
-    return sorted(suppliers, key=sort_key)
-
-def section_search_results() -> None:
-    """Display the supplier listings with pagination and sorting options."""
+def show_search_results() -> None:
     st.header("Suppliers Listings")
     
     if "page" not in st.session_state:
         st.session_state.page = 0
+    if "has_search" not in st.session_state:
+        st.session_state.has_search = False
+    if "search_results" not in st.session_state:
+        st.session_state.search_results = []
         
-    sort_by = st.selectbox(
-        "Sort by",
-        options=list(SORT_OPTIONS.keys()),
-        index=0
-    )
+    sort_by = st.selectbox("Sort by", options=list(SORT_OPTIONS.keys()), index=0)
     
-    sorted_suppliers = get_sorted_suppliers(all_supplier, sort_by)
-    total_pages = math.ceil(len(sorted_suppliers) / CARDS_PER_PAGE)
+    items = st.session_state.search_results if st.session_state.has_search and st.session_state.search_results else all_supplier
+    sorted_items = sort_items(items, sort_by)
+    
+    total_pages = math.ceil(len(sorted_items) / CARDS_PER_PAGE)
     start_idx = st.session_state.page * CARDS_PER_PAGE
-    end_idx = start_idx + CARDS_PER_PAGE
-    current_suppliers = sorted_suppliers[start_idx:end_idx]
+    current_items = sorted_items[start_idx:start_idx + CARDS_PER_PAGE]
     
-    display_suppliers_grid(current_suppliers)
-    setup_pagination(total_pages)
-
-
-def safe_load_image(image_path: str) -> None:
-    try:
-        st.image(image_path, use_container_width=True)
-    except Exception as e:
-        st.error(f"Failed to load image: {str(e)}")
-        st.image("assets/images/placeholder.png", use_container_width=True)
+    show_items_grid(current_items)
+    show_pagination(st.session_state.page, total_pages)
