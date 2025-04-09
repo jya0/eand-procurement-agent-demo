@@ -31,11 +31,11 @@ def show_image(image_path: str) -> None:
 def show_ebay_card(item: Dict[str, Any]) -> None:
     with st.container(border=True):
         with st.container():
+            st.header(f"👤 {item['seller']}")
             show_image(item["image"])
         
         with st.container():
             st.subheader(item["title"])
-            st.caption(f"👤 {item['seller']}")
             
             col1, col2 = st.columns([2, 1], gap="small")
             with col1:
@@ -102,7 +102,7 @@ def show_search_form() -> None:
     with st.form(key="search_form"):
         col1, col2 = st.columns(2, gap="large")
         
-        with col1:
+        with col1:  
             search_query = st.text_input("Product name")
             st.time_input("Expected shipment time")
             st.text_input("Location")
@@ -133,7 +133,28 @@ def show_ebay_search_form() -> None:
         col1, col2 = st.columns(2, gap="large")
         
         with col1:
-            search_query = st.text_input("What are you looking for?")
+            category = st.selectbox(
+                "Category",
+                options=[
+                    "All Categories",
+                    "Electronics",
+                    "Fashion",
+                    "Home & Garden",
+                    "Sports & Leisure",
+                    "Toys & Hobbies",
+                    "Automotive",
+                    "Health & Beauty",
+                    "Jewelry & Watches",
+                    "Musical Instruments",
+                    "Office Products",
+                    "Pet Supplies",
+                    "Books & Magazines",
+                    "Art & Collectibles",
+                    "Musical Instruments",
+                    "Industrial & Scientific"
+                ],
+                index=0
+            )
             condition = st.selectbox(
                 "Condition",
                 options=["Any", "New", "Used", "Refurbished", "For parts or not working"],
@@ -146,6 +167,14 @@ def show_ebay_search_form() -> None:
             )
             
         with col2:
+            price_range = st.slider(
+                "Maximum Price (DHS)",
+                min_value=0.0,
+                max_value=100000.0,
+                value=100000.0,
+                step=1000.0,
+                format="%.2f",
+            )
             sort_by = st.selectbox(
                 "Sort by",
                 options=["Best Match", "Price: Low to High", "Price: High to Low", "Time: ending soonest", "Time: newly listed"],
@@ -156,16 +185,13 @@ def show_ebay_search_form() -> None:
                 options=[10, 25, 50, 100],
                 index=0
             )
-            price_range = st.slider(
-                "Price Range (USD)",
-                min_value=0.0,
-                max_value=3000.0,
-                value=(0.0, 3000.0),
-                step=0.01,
-                format="%.2f",
-            )
             
-        if st.form_submit_button("Search eBay"):
+            # Add columns for the submit button
+            _, col_right = st.columns([5, 1], gap="small")
+            with col_right:
+                submit_button = st.form_submit_button("Search eBay")
+            
+        if submit_button:
             try:
                 st.session_state.page = 0
                 
@@ -190,10 +216,11 @@ def show_ebay_search_form() -> None:
                 filters = []
                 if condition != "Any":
                     filters.append(f"conditions:{{{condition_map[condition]}}}")
-                if price_range[0] > 0:
-                    filters.append(f"price:[{price_range[0]}..]")
-                if price_range[1] < 3000.0:
-                    filters.append(f"price:[..{price_range[1]}]")
+                if price_range < 100000.0:
+                    filters.append(f"price:[..{price_range}]")
+                
+                # Use category as search query if not "All Categories"
+                search_query = category if category != "All Categories" else ""
                 
                 items = ebay_api.search_items(
                     search_query,

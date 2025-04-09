@@ -26,6 +26,10 @@ ALL_PAGES_TITLE_KEY = [
 ]
 
 
+# Initialize session state for navigation if it doesn't exist
+if "current_page" not in st.session_state:
+    st.session_state.current_page = "Home"
+
 stNavbarOut = st_navbar(
     ALL_PAGES_TITLE_KEY,
     logo_path="assets/eand-logo/small/White/e&-lockup_Enterprise_engl_vert_White_rgb-cropped.svg",
@@ -56,7 +60,6 @@ stNavbarOut = st_navbar(
 st.container(height=10, border=False)
 
 
-
 def getPage(navBarPageSelected: str):
     for i in range(0, len(ALL_PAGES_TITLE_KEY)):
         if navBarPageSelected == ALL_PAGES_TITLE_KEY[i]:
@@ -64,16 +67,16 @@ def getPage(navBarPageSelected: str):
     return (None)
 
 
+# Handle navigation when navbar selection changes
 if st.session_state["navBarMain"] and st.session_state["navBarMain"][0]:
-    # st.write(st.session_state["navBarMain"][0])
-    pageToSwitch = getPage(st.session_state["navBarMain"][0])
-    # st.write(pageToSwitch)
-    if pageToSwitch:
-        st.session_state["navBarMain"][0] = None
-        st.switch_page(pageToSwitch)
+    selected_page = st.session_state["navBarMain"][0]
+    if selected_page != st.session_state.current_page:
+        st.session_state.current_page = selected_page
+        pageToSwitch = getPage(selected_page)
+        if pageToSwitch:
+            st.switch_page(pageToSwitch)
 
 
+# Use the navigation component
 pg = st.navigation(ALL_PAGES)
-
-
 pg.run()
