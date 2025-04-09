@@ -24,8 +24,8 @@ with st.expander("Use our simple form to specify product requirements, budget, a
 # )
 
 st.header("Search for Suppliers", divider=True)
-# with st.expander("AMPA searches Alibaba's vast database to find matching suppliers instantly."):
-show_search_results()
+with st.expander("AMPA searches Alibaba's vast database to find matching suppliers instantly."):
+    show_search_results()
 
 
 # section_header(
