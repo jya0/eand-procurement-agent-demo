@@ -1,7 +1,7 @@
 import streamlit as st
 from src.components.sections import show_header, show_search_form, show_search_results, show_ebay_search_form
 from src.components.footer import streamlit_footer
-from src.components.chatbox import chatbox
+from src.components.chatbot import show_chatbot
 
 
 st.title("How It Works")
@@ -35,7 +35,7 @@ show_search_results()
 
 st.header("Evaluate with Chatbot", divider=True)
 with st.expander("Ask our AI chatbot for recommendations or details, like \"Which supplier offers the best price-to-quality ratio?\""):
-    chatbox()
+    show_chatbot()
 
 show_header(
     "Automate Communications",

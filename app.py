@@ -16,13 +16,13 @@ ALL_PAGES = [
     st.Page(
         page="app_pages/Demo_.py",
         title="Shop & Chat Interface"
-        )
+        ),
 ]
 
 
 ALL_PAGES_TITLE_KEY = [
     "Home",
-    "Demo"
+    "Demo",
 ]
 
 
@@ -76,6 +76,7 @@ if st.session_state["navBarMain"] and st.session_state["navBarMain"][0]:
         if pageToSwitch:
             st.switch_page(pageToSwitch)
 
+# st.write(st.session_state)
 
 # Use the navigation component
 pg = st.navigation(ALL_PAGES)
