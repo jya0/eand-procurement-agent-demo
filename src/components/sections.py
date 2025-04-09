@@ -121,11 +121,11 @@ def show_search_form() -> None:
         with col2:
             max_price = st.slider(
                 "Price",
-                min_value=0.0,
-                max_value=1000.0,
-                value=0.0,
-                step=0.01,
-                format="%.2f",
+                min_value=0,
+                max_value=1000,
+                value=0,
+                step=1,
+                format="%d",
             )
             st.radio("Verify", options=["Yes", "No"])
             st.number_input("Age", min_value=0)
@@ -181,11 +181,11 @@ def show_ebay_search_form() -> None:
         with col2:
             price_range = st.slider(
                 "Maximum Price (DHS)",
-                min_value=0.0,
-                max_value=100000.0,
-                value=100000.0,
-                step=1000.0,
-                format="%.2f",
+                min_value=0,
+                max_value=100000,
+                value=100000,
+                step=100,
+                format="%d",
             )
             sort_by = st.selectbox(
                 "Sort by",
