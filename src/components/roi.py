@@ -765,7 +765,7 @@ def streamlit_roi_ver7():
             manual_time = st.slider(
                 "Manual Time per Supplier Event (hours)",
                 min_value=1.0,
-                max_value=20.0,
+                max_value=48.0,
                 value=7.3,
                 step=0.1,
                 format="%.1f hrs",
