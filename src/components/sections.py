@@ -22,39 +22,46 @@ def show_header(title: str, subtitle: str) -> None:
         st.header(title, divider=True)
         st.caption(subtitle)
 
+
 def show_image(image_path: str) -> None:
     try:
         st.image(image_path, use_container_width=True)
     except Exception:
         st.image("assets/images/placeholder.png")
 
+
 def show_ebay_card(item: Dict[str, Any]) -> None:
     with st.container(border=True):
+        st.header(f"👤 {item['seller']}")
         with st.container():
-            st.header(f"👤 {item['seller']}")
-            show_image(item["image"])
-        
-        with st.container():
-            st.subheader(item["title"])
-            
-            col1, col2 = st.columns([2, 1], gap="small")
-            with col1:
-                try:
-                    price = float(item['price']) * 3.65
-                    st.metric("💰 Price", f"AED {price:.2f}")
-                except (ValueError, TypeError):
-                    st.metric("💰 Price", "N/A")
+            col1, col2, col3 = st.columns([1, 8, 1], gap='small')
             with col2:
-                st.markdown(f"**{item['condition']}**")
-                
-            st.markdown(f"[View on eBay]({item['url']})")
+                st.image(item["image"], use_container_width=True)
+        
+        
+        st.subheader(item["title"])
+        
+        col1, col2 = st.columns([2, 1], gap="small")
+        with col1:
+            try:
+                price = float(item['price']) * 3.65
+                st.metric("💰 Price", f"AED {price:.2f}")
+            except (ValueError, TypeError):
+                st.metric("💰 Price", "N/A")
+        with col2:
+            st.markdown(f"**{item['condition']}**")
+            unique_key = f"add_to_pending_list_{item.get('id', hash(item['title']))}"
+            st.button("Add to card", key=unique_key)
+            
+        st.markdown(f"[View on eBay]({item['url']})")
+
 
 def show_supplier_card(supplier: Dict[str, Any]) -> None:
     with st.container(border=True):
         with st.container():
+            st.header(supplier["name"])
             show_image(supplier["image"])
         with st.container():
-            st.subheader(supplier["name"])
             st.caption(f"📍 {supplier['location']}")
             
             col1, col2 = st.columns([2, 1], gap="small")
@@ -67,6 +74,7 @@ def show_supplier_card(supplier: Dict[str, Any]) -> None:
                 
             st.markdown(f"⭐ **Rating:** {supplier['rating']}/5.0")
 
+
 def show_items_grid(items: List[Dict[str, Any]]) -> None:
     with st.container(border=True):
         for i in range(0, len(items), 3):
@@ -76,6 +84,7 @@ def show_items_grid(items: List[Dict[str, Any]]) -> None:
             for col, item in zip(cols, row_items):
                 with col:
                     show_ebay_card(item) if "title" in item else show_supplier_card(item)
+
 
 def show_pagination(current_page: int, total_pages: int) -> None:
     col1, col2, col3 = st.columns([1, 2, 1])
@@ -94,9 +103,11 @@ def show_pagination(current_page: int, total_pages: int) -> None:
                 
         st.caption(f"Page {current_page + 1} of {total_pages}")
 
+
 def sort_items(items: List[Dict[str, Any]], sort_by: str) -> List[Dict[str, Any]]:
     sort_key = SORT_OPTIONS.get(sort_by, SORT_OPTIONS["Price (Low to High)"])
     return sorted(items, key=sort_key)
+
 
 def show_search_form() -> None:
     with st.form(key="search_form"):
@@ -127,6 +138,7 @@ def show_search_form() -> None:
                 st.session_state.has_search = True
             except Exception as e:
                 st.error(f"Error searching eBay: {str(e)}")
+
 
 def show_ebay_search_form() -> None:
     with st.form(key="ebay_search_form"):
@@ -233,6 +245,7 @@ def show_ebay_search_form() -> None:
                 st.session_state.has_search = True
             except Exception as e:
                 st.error(f"Error searching eBay: {str(e)}")
+
 
 def show_search_results() -> None:
     st.header("Suppliers Listings")
