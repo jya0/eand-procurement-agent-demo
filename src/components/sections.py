@@ -39,7 +39,11 @@ def show_ebay_card(item: Dict[str, Any]) -> None:
             
             col1, col2 = st.columns([2, 1], gap="small")
             with col1:
-                st.metric("💰 Price", f"${item['price']}")
+                try:
+                    price = float(item['price']) * 3.65
+                    st.metric("💰 Price", f"AED {price:.2f}")
+                except (ValueError, TypeError):
+                    st.metric("💰 Price", "N/A")
             with col2:
                 st.markdown(f"**{item['condition']}**")
                 
@@ -119,6 +123,85 @@ def show_search_form() -> None:
             try:
                 st.session_state.page = 0
                 items = ebay_api.search_items(search_query)
+                st.session_state.search_results = [ebay_api.format_item(item) for item in items]
+                st.session_state.has_search = True
+            except Exception as e:
+                st.error(f"Error searching eBay: {str(e)}")
+
+def show_ebay_search_form() -> None:
+    with st.form(key="ebay_search_form"):
+        col1, col2 = st.columns(2, gap="large")
+        
+        with col1:
+            search_query = st.text_input("What are you looking for?")
+            condition = st.selectbox(
+                "Condition",
+                options=["Any", "New", "Used", "Refurbished", "For parts or not working"],
+                index=0
+            )
+            location = st.selectbox(
+                "Location",
+                options=["Worldwide", "United States", "Europe", "Asia", "Australia"],
+                index=0
+            )
+            
+        with col2:
+            sort_by = st.selectbox(
+                "Sort by",
+                options=["Best Match", "Price: Low to High", "Price: High to Low", "Time: ending soonest", "Time: newly listed"],
+                index=0
+            )
+            items_per_page = st.selectbox(
+                "Items per page",
+                options=[10, 25, 50, 100],
+                index=0
+            )
+            price_range = st.slider(
+                "Price Range (USD)",
+                min_value=0.0,
+                max_value=3000.0,
+                value=(0.0, 3000.0),
+                step=0.01,
+                format="%.2f",
+            )
+            
+        if st.form_submit_button("Search eBay"):
+            try:
+                st.session_state.page = 0
+                
+                # Convert condition to eBay API format
+                condition_map = {
+                    "New": "NEW",
+                    "Used": "USED",
+                    "Refurbished": "REFURBISHED",
+                    "For parts or not working": "FOR_PARTS_OR_NOT_WORKING"
+                }
+                
+                # Convert sort option to eBay API format
+                sort_map = {
+                    "Best Match": "bestMatch",
+                    "Price: Low to High": "price",
+                    "Price: High to Low": "-price",
+                    "Time: ending soonest": "endTime",
+                    "Time: newly listed": "newlyListed"
+                }
+                
+                # Build filter string
+                filters = []
+                if condition != "Any":
+                    filters.append(f"conditions:{{{condition_map[condition]}}}")
+                if price_range[0] > 0:
+                    filters.append(f"price:[{price_range[0]}..]")
+                if price_range[1] < 3000.0:
+                    filters.append(f"price:[..{price_range[1]}]")
+                
+                items = ebay_api.search_items(
+                    search_query,
+                    limit=items_per_page,
+                    sort=sort_map[sort_by],
+                    filters=",".join(filters) if filters else None
+                )
+                
                 st.session_state.search_results = [ebay_api.format_item(item) for item in items]
                 st.session_state.has_search = True
             except Exception as e:

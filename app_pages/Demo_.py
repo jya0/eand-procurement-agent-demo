@@ -1,5 +1,5 @@
 import streamlit as st
-from src.components.sections import show_header, show_search_form, show_search_results
+from src.components.sections import show_header, show_search_form, show_search_results, show_ebay_search_form
 from src.components.footer import streamlit_footer
 from src.components.chatbox import chatbox
 
@@ -15,7 +15,8 @@ st.divider()
 
 st.header("Input Your Criteria", divider=True)
 with st.expander("Use our simple form to specify product requirements, budget, and delivery preferences."):
-    show_search_form()
+    # show_search_form()
+    show_ebay_search_form()
 
 # section_header(
 #     "Search for Suppliers",

@@ -38,13 +38,15 @@ class EbayAPI:
         except Exception as e:
             raise Exception(f"Failed to get access token: {str(e)}")
 
-    def search_items(self, query: str, limit: int = 10) -> List[Dict[str, Any]]:
+    def search_items(self, query: str, limit: int = 10, sort: str = None, filters: str = None) -> List[Dict[str, Any]]:
         """
         Search for items on eBay.
         
         Args:
             query (str): Search query
             limit (int): Maximum number of items to return
+            sort (str): Sort order (e.g., 'price', '-price', 'bestMatch')
+            filters (str): Comma-separated filter string
             
         Returns:
             List[Dict[str, Any]]: List of items found
@@ -57,6 +59,11 @@ class EbayAPI:
             "q": query,
             "limit": limit
         }
+        
+        if sort:
+            params["sort"] = sort
+        if filters:
+            params["filter"] = filters
 
         try:
             response = requests.get(self.search_url, headers=headers, params=params)
