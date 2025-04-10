@@ -1,6 +1,7 @@
 import streamlit as st
 from data.supliers import all_supplier
 from src.components.ebay_api import EbayAPI
+from src.components.cart import Cart
 import math
 from typing import List, Dict, Any, Callable
 
@@ -16,6 +17,12 @@ SORT_OPTIONS = {
 }
 
 ebay_api = EbayAPI()
+cart = Cart()
+
+
+if "cart_items" not in st.session_state:
+    st.session_state.cart_items = []
+
 
 def show_header(title: str, subtitle: str) -> None:
     with st.container():
@@ -50,8 +57,22 @@ def show_ebay_card(item: Dict[str, Any]) -> None:
                 st.metric("💰 Price", "N/A")
         with col2:
             st.markdown(f"**{item['condition']}**")
-            unique_key = f"add_to_pending_list_{item.get('id', hash(item['title']))}"
-            st.button("Add to card", key=unique_key)
+            unique_key = f"add_to_cart_{item.get('id', hash(item['title']))}"
+            
+            # Check if item is already in cart
+            item_id = item.get('id', hash(item['title']))
+            is_in_cart = cart.is_item_in_cart(item_id)
+            
+            if is_in_cart:
+                if st.button("Remove from cart", key=unique_key):
+                    # Remove item from cart
+                    cart.remove_item(item_id)
+                    st.rerun()
+            else:
+                if st.button("Add to cart", key=unique_key):
+                    # Add item to cart
+                    cart.add_item(item)
+                    st.rerun()
             
         st.markdown(f"[View on eBay]({item['url']})")
 
@@ -268,3 +289,8 @@ def show_search_results() -> None:
     
     show_items_grid(current_items)
     show_pagination(st.session_state.page, total_pages)
+
+
+def show_cart() -> None:
+    """Display the shopping cart contents"""
+    cart.display()
