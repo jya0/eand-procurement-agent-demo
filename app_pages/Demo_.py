@@ -1,5 +1,5 @@
 import streamlit as st
-from src.components.sections import show_header, show_search_form, show_search_results, show_ebay_search_form
+from src.components.sections import show_header, show_search_form, show_search_results, show_ebay_search_form, show_cart
 from src.components.footer import streamlit_footer
 from src.components.chatbot import show_chatbot
 
@@ -27,6 +27,10 @@ st.header("Search for Suppliers", divider=True)
 with st.expander("AMPA searches Alibaba's vast database to find matching suppliers instantly."):
     show_search_results()
 
+# Add shopping cart display
+st.header("Shopping Cart", divider=True)
+with st.expander("View and manage items in your shopping cart"):
+    show_cart()
 
 # section_header(
 #     "Evaluate with Chatbot",
