@@ -4,9 +4,6 @@ from src.components.footer import streamlit_footer
 from src.components.chatbot import show_chatbot
 
 
-st.title("How It Works")
-
-st.divider()
 
 # section_header(
 #     "Input Your Criteria",
@@ -14,7 +11,7 @@ st.divider()
 # )
 
 st.header("Input Your Criteria", divider=True)
-with st.expander("Use our simple form to specify product requirements, budget, and delivery preferences."):
+with st.expander("Use our simple form to specify product requirements, budget, and delivery preferences.", expanded=True):
     # show_search_form()
     show_ebay_search_form()
 
@@ -33,9 +30,13 @@ with st.expander("AMPA searches Alibaba's vast database to find matching supplie
 #     "Ask our AI chatbot for recommendations or details, like \"Which supplier offers the best price-to-quality ratio?\""
 # )
 
-st.header("Evaluate with Chatbot", divider=True)
-with st.expander("Ask our AI chatbot for recommendations or details, like \"Which supplier offers the best price-to-quality ratio?\""):
-    show_chatbot()
+# st.header("Evaluate with Chatbot", divider=True)
+# with st.expander("Ask our AI chatbot for recommendations or details, like \"Which supplier offers the best price-to-quality ratio?\""):
+#     show_chatbot()
+
+st.header("Ask your AI to Find the Best Supplier", divider=True)
+show_chatbot()
+
 
 show_header(
     "Automate Communications",

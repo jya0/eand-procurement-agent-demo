@@ -1,6 +1,6 @@
 import streamlit as st
 from src.components.footer import streamlit_footer
-from src.components.roi import streamlit_roi_ver2, streamlit_roi_ver3, streamlit_roi_ver4, streamlit_roi_ver5, streamlit_roi_ver6, streamlit_roi_ver7
+from src.components.roi import streamlit_roi_ver8
 
 
 header_col1, header_col2 = st.columns([1, 3], gap="large")
@@ -55,20 +55,20 @@ with tabs[1]:
         {
             "title": "Dynamic Filtering Search",
             "description": "Faceted search to find suppliers across several B2B platforms such as Alibaba.",
-            "image": "assets/images/ampa-features/ampa-feature-search.gif",
+            "image": "assets/images/ampa-features/ampa-feature-search-b2b.gif",
             "caption": "Supplier Search",
-        },
-        {
-            "title": "LLM-powered Assistant",
-            "description": "Chat with an assistant and effortlessly re-rank the most relevant suppliers.",
-            "image": "assets/images/ampa-features/ampa-feature-llm.gif",
-            "caption": "Chat Assistant",
         },
         {
             "title": "Agentic AI Communicator",
             "description": "AI agentic system will contact and negotiate with new suppliers through email.",
             "image": "assets/images/ampa-features/ampa-feature-agent.gif",
             "caption": "Email Automation",
+        },
+        {
+            "title": "LLM-powered Assistant",
+            "description": "Chat with an assistant and effortlessly re-rank the most relevant suppliers.",
+            "image": "assets/images/ampa-features/ampa-feature-llm.gif",
+            "caption": "Chat Assistant",
         },
         {
             "title": "SRM Dashboard",
@@ -78,6 +78,7 @@ with tabs[1]:
         },
     ]
 
+    # st.title("Phase 1")
     col1, col2 = st.columns(2, vertical_alignment="top", gap="large")
     columns = [col1, col1, col2, col2]
 
@@ -159,7 +160,8 @@ with tabs[2]:
     # streamlit_roi_ver3()
     # streamlit_roi_ver5()
     # streamlit_roi_ver6()
-    streamlit_roi_ver7()
+    # streamlit_roi_ver7()
+    streamlit_roi_ver8()
 
 # Get Started Tab
 with tabs[3]:

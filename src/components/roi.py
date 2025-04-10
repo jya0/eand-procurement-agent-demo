@@ -828,3 +828,92 @@ def streamlit_roi_ver7():
                 st.metric(
                     "Time Efficiency Improvement", f"{time_efficiency_percentage:.2f}%"
                 )
+
+def streamlit_roi_ver8():
+    col1, col2 = st.columns([3, 1])
+    with col1:
+        st.header("ROI Calculator", divider=True)
+
+        with st.form(key="procurement_roi_form_ver8"):
+            # st.markdown("## Monetary Perspective")
+            st.subheader("Monetary Perspective", divider=True)
+
+
+            current_contract_value = st.number_input(
+                "Current Annual Contract Value (AED)",
+                min_value=100000,
+                max_value=1000000000,
+                value=10000000,
+                step=10000,
+            )
+
+            st.info("AMPA can bring an average of 25% cost reduction in supplier contracts")
+            # st.divider()
+            # st.markdown("## Time Perspective - Supplier Discovery")
+            st.subheader("Time Perspective", divider=True)
+
+            st.markdown(
+                "Manual supplier discovery takes an average of **7.3 hours** per event, "
+                "while AI-assisted discovery takes only **0.14 hours** per event."
+            )
+
+            manual_time = st.slider(
+                "Manual Time per Supplier Event (hours)",
+                min_value=1.0,
+                max_value=48.0,
+                value=7.3,
+                step=0.1,
+                format="%.1f hrs",
+            )
+
+            fixed_ai_time = 0.14
+            st.info(
+                f"""
+                    AI-Assisted Time per Supplier Event can be as low as: {fixed_ai_time} hours.\n
+                    Which is around {fixed_ai_time * 60} minutes.
+                """
+            )
+
+            events_per_year = st.slider(
+                "Procurement Events per Year",
+                min_value=1,
+                max_value=1000,
+                value=264,
+                step=1,
+                format="%d events",
+            )
+
+
+            submitted = st.form_submit_button("Calculate ROI")
+
+            if submitted:
+                # Monetary calculations
+                fixed_new_contract_value = current_contract_value * 0.75
+                cost_savings = current_contract_value - fixed_new_contract_value
+                monetary_roi = (
+                    (cost_savings / current_contract_value) * 100
+                    if current_contract_value > 0
+                    else 0
+                )
+
+                # Time calculations for supplier discovery
+                total_manual_time = manual_time * events_per_year
+                total_ai_time = fixed_ai_time * events_per_year
+                total_time_saved = total_manual_time - total_ai_time
+                # Calculate time efficiency percentage
+                time_efficiency_percentage = (
+                    (manual_time / fixed_ai_time) * 100
+                    if manual_time > 0
+                    else 0
+                )
+
+                st.success("ROI Analysis Complete")
+                col_result1, col_result2 = st.columns(2)
+                with col_result1:
+                    st.metric("Monetary Cost Savings", f"AED {cost_savings:,.2f}")
+                    st.metric("Monetary ROI", f"{monetary_roi:.2f}%")
+                with col_result2:
+                    st.metric("Annual Time Saved", f"{total_time_saved:,.1f} hours")
+                    st.metric(
+                        "Time Efficiency Improvement", f"{time_efficiency_percentage:.2f}%"
+                    )
