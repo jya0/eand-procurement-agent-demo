@@ -32,7 +32,7 @@ def show_header(title: str, subtitle: str) -> None:
 
 def show_image(image_path: str) -> None:
     try:
-        st.image(image_path, use_container_width=True)
+        st.image(image_path)
     except Exception:
         st.image("assets/images/placeholder.png")
 
@@ -40,13 +40,13 @@ def show_image(image_path: str) -> None:
 def show_ebay_card(item: Dict[str, Any]) -> None:
     with st.container(border=True):
         st.header(f"👤 {item['seller']}")
+            
         with st.container():
             col1, col2, col3 = st.columns([1, 8, 1], gap='small')
             with col2:
-                st.image(item["image"], use_container_width=True)
+                show_image(item["image"])
         
-        
-        st.subheader(item["title"])
+        st.markdown(f"<h4>{item['title']}</h4>", unsafe_allow_html=True)
         
         col1, col2 = st.columns([2, 1], gap="small")
         with col1:
@@ -65,16 +65,18 @@ def show_ebay_card(item: Dict[str, Any]) -> None:
             
             if is_in_cart:
                 if st.button("Remove from cart", key=unique_key):
-                    # Remove item from cart
                     cart.remove_item(item_id)
                     st.rerun()
             else:
                 if st.button("Add to cart", key=unique_key):
-                    # Add item to cart
                     cart.add_item(item)
                     st.rerun()
-            
-        st.markdown(f"[View on eBay]({item['url']})")
+        col1, col2 = st.columns([2, 1])                    
+        with col1:    
+            st.markdown(f"[View on eBay]({item['url']})")
+        with col2:
+            status = "✅ Verified" if item.get("verified", False) else "❌ Not Verified"
+            st.markdown(f"**{status}**")
 
 
 def show_supplier_card(supplier: Dict[str, Any]) -> None:
