@@ -9,6 +9,7 @@ class Cart:
     def __init__(self):
         """Initialize an empty cart."""
         self.items = []
+        self.clean_data = []
         
     def add_item(self, item: Dict[str, Any]) -> None:
         """
@@ -22,7 +23,9 @@ class Cart:
         # Add a unique ID if not present
         if 'id' not in cart_item:
             cart_item['id'] = hash(cart_item.get('title', ''))
+        
         self.items.append(cart_item)
+        self.clean_data = self.prepare_data_to_chat()
         
     def remove_item(self, item_id: Any) -> None:
         """
@@ -82,6 +85,7 @@ class Cart:
             st.info("Your cart is empty")
             return
         
+        print(self.clean_data)
         st.header("Shopping Cart")
         
         total_price = 0
@@ -114,3 +118,53 @@ class Cart:
             st.success("Thank you for your purchase!")
             self.clear()
             st.rerun()
+
+
+    def prepare_data_to_chat(self) -> List[Dict[str, Any]]:
+        """
+        Prepare cart data for AI chat by removing unnecessary fields.
+        
+        Returns:
+            List[Dict[str, Any]]: List of cleaned cart items with only relevant fields
+        """
+        cleaned_items = []
+        for item in self.items:
+            cleaned_item = {
+                'title': item.get('title', ''),
+                'price': item.get('price', '0.00'),
+                'condition': item.get('condition', 'Unknown'),
+                'seller': item.get('seller', 'Unknown')
+            }
+            cleaned_items.append(cleaned_item)
+        return cleaned_items
+
+
+    def get_cart_data_string(self) -> str:
+        """
+        Convert cart items to a clean, pipe-delimited string format.
+        
+        Returns:
+            str: Each item as "Title|Price|Condition|Seller" 
+                Returns "empty" if cart is empty
+                
+        Example:
+            "Item 1|10.00|New|SellerA\nItem 2|20.00|Used|SellerB"
+        """
+        if not self.items:
+            return "empty"
+        
+        item_strings = []
+        for item in self.items:
+            try:
+                item_str = (
+                    f"{item.get('title', 'N/A')}|"
+                    f"{item.get('price', '0.00')}|"
+                    f"{item.get('condition', 'Unknown')}|"
+                    f"{item.get('seller', 'Unknown')}"
+                )
+                item_strings.append(item_str)
+            except Exception as e:
+                print(f"Error formatting item: {e}")
+                continue
+        
+        return "\n".join(item_strings)
