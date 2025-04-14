@@ -184,7 +184,6 @@ def show_ebay_search_form() -> None:
                     "Office Products",
                     "Pet Supplies",
                     "Books & Magazines",
-                    "Art & Collectibles",
                     "Musical Instruments",
                     "Industrial & Scientific"
                 ],

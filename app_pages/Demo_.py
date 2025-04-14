@@ -21,7 +21,7 @@ with st.expander("Use our simple form to specify product requirements, budget, a
 # )
 
 st.header("Search for Suppliers", divider=True)
-with st.expander("AMPA searches Alibaba's vast database to find matching suppliers instantly."):
+with st.expander("AMPA searches Alibaba's vast database to find matching suppliers instantly.", expanded=True):
     show_search_results()
 
 # Add shopping cart display
