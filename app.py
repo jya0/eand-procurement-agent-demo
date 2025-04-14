@@ -1,5 +1,6 @@
 import streamlit as st
 from streamlit_navigation_bar import st_navbar
+from streamlit_extras.bottom_container import bottom
 
 
 st.set_page_config(
@@ -7,6 +8,11 @@ st.set_page_config(
     page_icon="assets/eand-logo/small/Red/e&-lockup_Enterprise_engl_vert_red_rgb-cropped.svg"
 )
 
+
+with open('assets/styles/chat_input.css') as f:
+    css = f.read()
+
+st.markdown(f'<style>{css}</style>', unsafe_allow_html=True)
 
 ALL_PAGES = [
     st.Page(
@@ -77,6 +83,19 @@ if st.session_state["navBarMain"] and st.session_state["navBarMain"][0]:
             st.switch_page(pageToSwitch)
 
 # st.write(st.session_state)
+
+# with bottom():
+#     st.divider()
+#     footer_col1, footer_col2, footer_col3 = st.columns(3)
+
+#     with footer_col1:
+#         st.text("AMPA - Automatic Market Procurement Agent")
+
+#     with footer_col2:
+#         st.text("Privacy Policy | Terms of Service")
+
+#     with footer_col3:
+#         st.text("© 2025 e& Enterprise")
 
 # Use the navigation component
 pg = st.navigation(ALL_PAGES)

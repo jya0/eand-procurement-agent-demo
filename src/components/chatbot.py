@@ -1,25 +1,11 @@
 import streamlit as st
 import os
 from cerebras.cloud.sdk import Cerebras
+from streamlit_extras.stylable_container import stylable_container
 
 
 def display_intro():
-    # Header with icon and title
-    col1, col2 = st.columns([1, 5])
-
-    with col1:
-        # Robot emoji as the chatbot icon
-        st.write("# 🤖")
-
-    with col2:
-        st.title("Supplier Assistant")
-
-    # Main description with icons
-    st.write(
-        """
-    ### ✨ Chat with an assistant and effortlessly re-rank the most relevant suppliers. 
-    """
-    )
+    st.header("✨ Chat with an assistant and effortlessly re-rank the most relevant suppliers.", anchor=False)
 
     st.divider()
 
@@ -183,10 +169,20 @@ class ChatbotClient:
 def show_chatbot():
     with st.container():
         with st.columns([1, 11, 1])[1]:
-            textArea = st.container(border=True, height=450)
+            textArea = stylable_container(
+                key="textArea",
+                css_styles="""
+                {
+                    border: 1px solid rgba(255, 75, 75, 1);
+                    border-radius: 0.5rem;
+                    padding: calc(1em - 1px);
+                    background-color: white;
+                    max-height: 450px;
+                    overflow: scroll;
+                }
+                """,)
             with textArea:
                 display_intro()
-
             try:
                 # Initialize chatbot client
                 if "chatbot_client" not in st.session_state:
@@ -202,7 +198,7 @@ def show_chatbot():
                 if "messages" not in st.session_state:
                     st.session_state.messages = []
 
-               # Display chat messages stored in history on app rerun
+                # Display chat messages stored in history on app rerun
                 with textArea:
                     for message in st.session_state.messages:
                         avatar = "assets/eand-logo/small/Red/e&-lockup_Enterprise_engl_vert_red_rgb-cropped.svg" if message["role"] == "assistant" else "🦔"
@@ -210,7 +206,7 @@ def show_chatbot():
                             st.markdown(message["content"])
 
                 # Handle user input
-                if prompt := st.chat_input("Enter your prompt here..."):
+                if prompt := st.chat_input("Enter your prompt here...", max_chars=4200):
                     st.session_state.messages.append(
                         {"role": "user", "content": prompt}
                     )
