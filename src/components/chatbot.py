@@ -3,23 +3,6 @@ import os
 from cerebras.cloud.sdk import Cerebras
 
 
-def update_chatbot_context(cerebrasClient, context):
-    try:
-        chat_completion = cerebrasClient.chat.completions.create(
-            model=model_option,
-            messages=[{"role": "user", "content": context}],
-        )
-
-        # Display response from Cerebras API
-        # with st.chat_message("assistant", avatar="🤖"):
-        response = chat_completion.choices[0].message.content
-        # Save response to chat history
-        st.session_state.messages.append({"role": "assistant", "content": response})
-        # st.markdown(response)
-    except Exception as e:
-        st.error(e, icon="🚨")
-
-
 def display_intro():
     # Header with icon and title
     col1, col2 = st.columns([1, 5])
@@ -94,129 +77,119 @@ def display_intro():
     #     start_button = st.button("Start Chat", use_container_width=True)
 
 
+class ChatbotClient:
+    """
+    A class to handle interactions with the Cerebras API for chatbot functionality.
+    """
+
+    def __init__(self, api_key=None):
+        """
+        Initialize the ChatbotClient with API key and models information.
+
+        Args:
+            api_key: The Cerebras API key. If None, tries to get from environment variables.
+        """
+        self.api_key = api_key or os.getenv("CEREBRAS_API_KEY")
+        if not self.api_key:
+            raise ValueError("API key is required to initialize ChatbotClient")
+
+        self.client = Cerebras(api_key=self.api_key)
+
+        # Define available models and their details
+        self.models = {
+            "llama3.1-8b": {
+                "name": "Llama3.1-8b",
+                "tokens": 8192,
+                "developer": "Meta",
+            },
+            "llama-3.3-70b": {
+                "name": "Llama-3.3-70b",
+                "tokens": 8192,
+                "developer": "Meta",
+            },
+        }
+
+        # Default model
+        self.default_model = "llama-3.3-70b"
+
+    def get_available_models(self):
+        """
+        Return the list of available models.
+
+        Returns:
+            A dictionary of available models and their details.
+        """
+        return self.models
+
+    def send_message(self, prompt, model=None, max_tokens=None):
+        """
+        Send a message to the specified model and get a response.
+
+        Args:
+            prompt: The user's message
+            model: The model to use (defaults to default_model if None)
+            max_tokens: Maximum tokens for the response
+
+        Returns:
+            The model's response text
+
+        Raises:
+            Exception: If there's an error in the API call
+        """
+        model = model or self.default_model
+
+        # Prepare API call parameters
+        params = {"model": model, "messages": [{"role": "user", "content": prompt}]}
+
+        if max_tokens:
+            params["max_tokens"] = max_tokens
+
+        try:
+            chat_completion = self.client.chat.completions.create(**params)
+            return chat_completion.choices[0].message.content
+        except Exception as e:
+            raise Exception(f"Error generating response: {str(e)}")
+
+
 def show_chatbot():
     with st.container():
         with st.columns([1, 11, 1])[1]:
             textArea = st.container(border=True, height=450)
             with textArea:
                 display_intro()
-            api_key = os.getenv("CEREBRAS_API_KEY")
-            if not api_key:
-                st.warning("API KEY MISSING!")
-                st.stop()
 
-            # Create the Cerebras client
-            client = Cerebras(
-                # This is the default and can be omitted
-                api_key=api_key,
-            )
+            try:
+                # Initialize chatbot client
+                if "chatbot_client" not in st.session_state:
+                    try:
+                        st.session_state.chatbot_client = ChatbotClient()
+                    except ValueError as e:
+                        st.warning(str(e))
+                        st.stop()
 
-            # Initialize chat history and selected model
-            if "messages" not in st.session_state:
-                st.session_state.messages = []
+                chatbot = st.session_state.chatbot_client
 
-            if "selected_model" not in st.session_state:
-                st.session_state.selected_model = None
+                # Initialize chat history and selected model
+                if "messages" not in st.session_state:
+                    st.session_state.messages = []
 
-            # Define model details
-            models = {
-                "llama3.1-8b": {
-                    "name": "Llama3.1-8b",
-                    "tokens": 8192,
-                    "developer": "Meta",
-                },
-                "llama-3.3-70b": {
-                    "name": "Llama-3.3-70b",
-                    "tokens": 8192,
-                    "developer": "Meta",
-                },
-            }
+               # Display chat messages stored in history on app rerun
+                with textArea:
+                    for message in st.session_state.messages:
+                        avatar = "assets/eand-logo/small/Red/e&-lockup_Enterprise_engl_vert_red_rgb-cropped.svg" if message["role"] == "assistant" else "🦔"
+                        with st.chat_message(message["role"], avatar=avatar):
+                            st.markdown(message["content"])
 
-            # Layout for model selection and max_tokens slider
-            # col1, col2 = st.columns(2)
-
-            # with col1:
-            #     model_option = st.selectbox(
-            #         "Choose a model:",
-            #         options=list(models.keys()),
-            #         format_func=lambda x: models[x]["name"],
-            #     )
-
-            # Detect model change and clear chat history if model has changed
-            # if st.session_state.selected_model != model_option:
-            #     st.session_state.messages = []
-            #     st.session_state.selected_model = model_option
-
-            # max_tokens_range = models[model_option]["tokens"]
-
-            # with col2:
-            #     # Adjust max_tokens slider based on the selected model
-            #     max_tokens = st.slider(
-            #         "Max Tokens:",
-            #         min_value=512,
-            #         max_value=max_tokens_range,
-            #         value=max_tokens_range,
-            #         step=512,
-            #         help=f"Select the maximum number of tokens (words) for the model's response.",
-            #     )
-
-            # st.write(st.session_state)
-            # Display chat messages stored in history on app rerun
-            model_option = "llama-3.3-70b"
-
-            with textArea:
-                for message in st.session_state.messages:
-                    avatar = "🤖" if message["role"] == "assistant" else "🦔"
-                    with st.chat_message(message["role"], avatar=avatar):
-                        st.markdown(message["content"])
-            if prompt := st.chat_input("Enter your prompt here..."):
-                st.session_state.messages.append({"role": "user", "content": prompt})
-                try:
-                    chat_completion = client.chat.completions.create(
-                        model=model_option,
-                        messages=[{"role": "user", "content": prompt}],
-                    )
-
-                    # Display response from Cerebras API
-                    # with st.chat_message("assistant", avatar="🤖"):
-                    response = chat_completion.choices[0].message.content
-                    # Save response to chat history
+                # Handle user input
+                if prompt := st.chat_input("Enter your prompt here..."):
                     st.session_state.messages.append(
-                        {"role": "assistant", "content": response}
+                        {"role": "user", "content": prompt}
                     )
-                    # st.markdown(response)
-                except Exception as e:
-                    st.error(e, icon="🚨")
-                st.rerun()
+                    response = chatbot.send_message(prompt)
+                    st.session_state.messages.append(
+                            {"role": "assistant", "content": response}
+                        )
+                    st.rerun()
 
-
-# st.title("Echo Bot")
-
-# # Initialize chat history
-# if "messages" not in st.session_state:
-#     st.session_state.messages = []
-
-# # Display chat messages from history on app rerun
-
-
-# Function to process user input
-# def process_input(user_input):
-#     # Add user message to chat history
-#     st.session_state.messages.append({"role": "user", "content": user_input})
-#     # Generate response
-#     response = f"Echo: {user_input}"
-#     # Add assistant response to chat history
-#     st.session_state.messages.append({"role": "assistant", "content": response})
-
-
-# with st.container():
-#     # Get user input
-#     for message in st.session_state.messages:
-#         with st.chat_message(message["role"]):
-#             st.markdown(message["content"])
-#     if prompt := st.chat_input("What is up?"):
-#         process_input(prompt)
-#         # Rerun the app to display the new messages
-#         st.rerun()
-
-# st.write("Outside container")
+            except Exception as e:
+                st.error(f"An unexpected error occurred: {str(e)}", icon="🚨")
