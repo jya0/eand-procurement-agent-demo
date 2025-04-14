@@ -1,5 +1,6 @@
 from typing import List, Dict, Any, Optional
 import streamlit as st
+import src.components.chatbot 
 
 class Cart:
     """
@@ -114,10 +115,14 @@ class Cart:
         st.divider()
         st.metric("Total", f"AED {total_price:.2f}")
         
-        if st.button("Checkout"):
-            st.success("Thank you for your purchase!")
-            self.clear()
-            st.rerun()
+        if st.button("Export to chat"):
+            try:
+                chatbot = st.session_state.chatbot_client
+            except:
+                st.error("No Chatbot found")
+            data = self.get_cart_data_string()
+            st.write(chatbot.send_message(data))
+            # st.rerun()
 
 
     def prepare_data_to_chat(self) -> List[Dict[str, Any]]:
