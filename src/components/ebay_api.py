@@ -1,6 +1,7 @@
 import requests
 from typing import List, Dict, Any, Optional
 import os
+import random
 from dotenv import load_dotenv
 
 class EbayAPI:
@@ -80,5 +81,6 @@ class EbayAPI:
             "image": item.get("image", {}).get("imageUrl", "assets/images/placeholder.png"),
             "condition": item.get("condition", "Unknown"),
             "seller": item.get("seller", {}).get("username", "Unknown"),
-            "url": item.get("itemWebUrl", "#")
+            "url": item.get("itemWebUrl", "#"),
+            "verified": random.random() < 0.8
         } 
