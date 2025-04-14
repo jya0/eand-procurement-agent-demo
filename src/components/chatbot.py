@@ -150,6 +150,35 @@ class ChatbotClient:
         except Exception as e:
             raise Exception(f"Error generating response: {str(e)}")
 
+    def send_messages(self, messages, model=None, max_tokens=None):
+        """
+        Send messages to the specified model and get a response.
+
+        Args:
+            messages: List of message objects with role and content
+            model: The model to use (defaults to default_model if None)
+            max_tokens: Maximum tokens for the response
+
+        Returns:
+            The model's response text
+
+        Raises:
+            Exception: If there's an error in the API call
+        """
+        model = model or self.default_model
+
+        # Prepare API call parameters
+        params = {"model": model, "messages": messages}
+
+        if max_tokens:
+            params["max_tokens"] = max_tokens
+
+        try:
+            chat_completion = self.client.chat.completions.create(**params)
+            return chat_completion.choices[0].message.content
+        except Exception as e:
+            raise Exception(f"Error generating response: {str(e)}")
+
 
 def show_chatbot():
     with st.container():
@@ -185,11 +214,12 @@ def show_chatbot():
                     st.session_state.messages.append(
                         {"role": "user", "content": prompt}
                     )
-                    response = chatbot.send_message(prompt)
+                    response = chatbot.send_messages(st.session_state.messages)
                     st.session_state.messages.append(
                             {"role": "assistant", "content": response}
                         )
                     st.rerun()
+                    st.write(st.session_state.messages)
 
             except Exception as e:
                 st.error(f"An unexpected error occurred: {str(e)}", icon="🚨")

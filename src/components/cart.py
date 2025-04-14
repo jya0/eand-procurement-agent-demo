@@ -114,14 +114,19 @@ class Cart:
         
         st.divider()
         st.metric("Total", f"AED {total_price:.2f}")
-        
+
         if st.button("Export to chat"):
             try:
                 chatbot = st.session_state.chatbot_client
             except:
                 st.error("No Chatbot found")
             data = self.get_cart_data_string()
-            st.write(chatbot.send_message(data))
+            response = chatbot.send_message(data)
+            if "messages" not in st.session_state:
+                st.session_state.messages = []
+            st.session_state.messages.append(
+                    {"role": "assistant", "content": response}
+                )
             # st.rerun()
 
 
