@@ -3,17 +3,157 @@ from data.supliers import all_supplier
 from src.components.ebay_api import EbayAPI
 from src.components.cart import Cart
 import math
-from typing import List, Dict, Any, Callable
+from typing import List, Dict, Any, Callable, Optional, Tuple
+import logging
+
+# Configure logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 CARDS_PER_PAGE = 6
 IMAGE_WIDTH = 300
 IMAGE_HEIGHT = 200
 
-SORT_OPTIONS = {
-    "Price (Low to High)": lambda x: float(x.get("price", 0)),
-    "Price (High to Low)": lambda x: -float(x.get("price", 0)),
-    "Rating (High to Low)": lambda x: -float(x.get("rating", 0)),
-    "Delivery Time (Fastest)": lambda x: int(x.get("delivery_time", "0-0").split("-")[0])
+# Constants
+DEFAULT_PRICE_RANGE = (0, 100000)
+PRICE_STEP = 100
+DEFAULT_ITEMS_PER_PAGE = 10
+ITEMS_PER_PAGE_OPTIONS = [10, 25, 50, 100]
+MAX_RETRIES = 3
+
+# Error messages
+ERROR_MESSAGES = {
+    "api_error": "An error occurred while searching eBay. Please try again later.",
+    "invalid_category": "Invalid category selected. Please try again.",
+    "invalid_subcategory": "Invalid subcategory selected. Please try again.",
+    "search_failed": "Search failed. Please check your parameters and try again.",
+    "session_error": "Session error. Please refresh the page and try again."
+}
+
+# Category mapping
+CATEGORIES: Dict[str, List[str]] = {
+    "All Categories": [],
+    "Electronics": [
+        "Computers & Tablets",
+        "Cell Phones & Accessories",
+        "Cameras & Photo",
+        "TV, Video & Audio",
+        "Video Games & Consoles",
+        "Smart Home & Security"
+    ],
+    "Fashion": [
+        "Men's Clothing",
+        "Women's Clothing",
+        "Shoes",
+        "Jewelry & Watches",
+        "Bags & Accessories",
+        "Kids' Clothing"
+    ],
+    "Home & Garden": [
+        "Furniture",
+        "Home Décor",
+        "Kitchen & Dining",
+        "Bedding & Bath",
+        "Garden & Outdoor",
+        "Tools & Home Improvement"
+    ],
+    "Sports & Leisure": [
+        "Exercise & Fitness",
+        "Sports Equipment",
+        "Outdoor Sports",
+        "Team Sports",
+        "Golf",
+        "Cycling"
+    ],
+    "Toys & Hobbies": [
+        "Action Figures",
+        "Dolls & Bears",
+        "Building Toys",
+        "Games",
+        "Model Trains",
+        "RC Vehicles"
+    ],
+    "Automotive": [
+        "Car Parts & Accessories",
+        "Motorcycle Parts",
+        "Truck Parts",
+        "Tools & Equipment",
+        "Car Electronics",
+        "Tires & Wheels"
+    ],
+    "Health & Beauty": [
+        "Fragrances",
+        "Makeup",
+        "Skin Care",
+        "Hair Care",
+        "Vitamins & Supplements",
+        "Personal Care"
+    ],
+    "Jewelry & Watches": [
+        "Fine Jewelry",
+        "Fashion Jewelry",
+        "Watches",
+        "Loose Diamonds",
+        "Loose Gemstones",
+        "Jewelry Boxes"
+    ],
+    "Musical Instruments": [
+        "Guitars",
+        "Keyboards & Pianos",
+        "Drums & Percussion",
+        "Brass Instruments",
+        "Woodwind Instruments",
+        "Pro Audio Equipment"
+    ],
+    "Office Products": [
+        "Office Furniture",
+        "Office Electronics",
+        "Office Supplies",
+        "Printers & Scanners",
+        "Presentation Equipment",
+        "Shipping Supplies"
+    ],
+    "Pet Supplies": [
+        "Dog Supplies",
+        "Cat Supplies",
+        "Fish Supplies",
+        "Bird Supplies",
+        "Reptile Supplies",
+        "Small Animal Supplies"
+    ],
+    "Books & Magazines": [
+        "Fiction Books",
+        "Non-Fiction Books",
+        "Textbooks",
+        "Children's Books",
+        "Magazines",
+        "Audiobooks"
+    ],
+    "Industrial & Scientific": [
+        "Lab Equipment",
+        "Industrial Equipment",
+        "Safety Equipment",
+        "Electrical Equipment",
+        "Material Handling",
+        "Test Equipment"
+    ]
+}
+
+# Condition mapping
+CONDITION_MAP: Dict[str, str] = {
+    "New": "NEW",
+    "Used": "USED",
+    "Refurbished": "REFURBISHED",
+    "For parts or not working": "FOR_PARTS_OR_NOT_WORKING"
+}
+
+# Sort options mapping
+SORT_MAP: Dict[str, str] = {
+    "Best Match": "bestMatch",
+    "Price: Low to High": "price",
+    "Price: High to Low": "-price",
+    "Time: ending soonest": "endTime",
+    "Time: newly listed": "newlyListed"
 }
 
 ebay_api = EbayAPI()
@@ -128,8 +268,25 @@ def show_pagination(current_page: int, total_pages: int) -> None:
 
 
 def sort_items(items: List[Dict[str, Any]], sort_by: str) -> List[Dict[str, Any]]:
-    sort_key = SORT_OPTIONS.get(sort_by, SORT_OPTIONS["Price (Low to High)"])
-    return sorted(items, key=sort_key)
+    """Sort items based on the selected sort option."""
+    try:
+        # Get the sort key from SORT_MAP, defaulting to "Best Match"
+        sort_key = SORT_MAP.get(sort_by, "bestMatch")
+        
+        # Sort the items based on the selected criteria
+        if sort_key == "price":
+            return sorted(items, key=lambda x: float(x.get("price", 0)))
+        elif sort_key == "-price":
+            return sorted(items, key=lambda x: -float(x.get("price", 0)))
+        elif sort_key == "endTime":
+            return sorted(items, key=lambda x: x.get("endTime", ""))
+        elif sort_key == "newlyListed":
+            return sorted(items, key=lambda x: x.get("listingDate", ""))
+        else:  # bestMatch
+            return items
+    except Exception as e:
+        logger.error(f"Error sorting items: {str(e)}")
+        return items
 
 
 def show_search_form() -> None:
@@ -163,113 +320,240 @@ def show_search_form() -> None:
                 st.error(f"Error searching eBay: {str(e)}")
 
 
-def show_ebay_search_form() -> None:
-    with st.form(key="ebay_search_form"):
-        col1, col2 = st.columns(2, gap="large")
+def validate_category(category: str, subcategory: Optional[str] = None) -> bool:
+    """Validate if the selected category and subcategory are valid."""
+    try:
+        if category not in CATEGORIES:
+            logger.error(f"Invalid category: {category}")
+            return False
         
+        if subcategory and category != "All Categories":
+            if subcategory not in CATEGORIES[category]:
+                logger.error(f"Invalid subcategory: {subcategory} for category: {category}")
+                return False
+        
+        return True
+    except Exception as e:
+        logger.error(f"Error validating category: {str(e)}")
+        return False
+
+
+def handle_search_error(error: Exception) -> None:
+    """Handle search errors and display appropriate messages."""
+    error_message = str(error).lower()
+    
+    if "api" in error_message:
+        st.error(ERROR_MESSAGES["api_error"])
+    elif "category" in error_message:
+        st.error(ERROR_MESSAGES["invalid_category"])
+    elif "subcategory" in error_message:
+        st.error(ERROR_MESSAGES["invalid_subcategory"])
+    else:
+        st.error(ERROR_MESSAGES["search_failed"])
+    
+    logger.error(f"Search error: {str(error)}")
+
+
+def initialize_session_state() -> None:
+    """Initialize session state variables for category selection with validation."""
+    try:
+        if "selected_category" not in st.session_state:
+            st.session_state.selected_category = "All Categories"
+        if "selected_subcategory" not in st.session_state:
+            st.session_state.selected_subcategory = None
+            
+        # Validate existing session state
+        if not validate_category(st.session_state.selected_category, st.session_state.selected_subcategory):
+            st.session_state.selected_category = "All Categories"
+            st.session_state.selected_subcategory = None
+            st.warning("Invalid category selection was reset.")
+    except Exception as e:
+        logger.error(f"Session state initialization error: {str(e)}")
+        st.error(ERROR_MESSAGES["session_error"])
+
+
+def get_button_text() -> str:
+    """Generate the text for the category selection button based on current selection."""
+    try:
+        if st.session_state.selected_category == "All Categories":
+            return "Select Category"
+        
+        if not validate_category(st.session_state.selected_category, st.session_state.selected_subcategory):
+            return "Select Category"
+        
+        text = st.session_state.selected_category
+        if st.session_state.selected_subcategory:
+            text += f" > {st.session_state.selected_subcategory}"
+        return text
+    except Exception as e:
+        logger.error(f"Error getting button text: {str(e)}")
+        return "Select Category"
+
+
+def build_search_filters(condition: str, price_range: int) -> List[str]:
+    """Build the filter string for the eBay API search with validation."""
+    try:
+        filters = []
+        if condition != "Any" and condition in CONDITION_MAP:
+            filters.append(f"conditions:{{{CONDITION_MAP[condition]}}}")
+        if price_range < DEFAULT_PRICE_RANGE[1]:
+            filters.append(f"price:[..{price_range}]")
+        return filters
+    except Exception as e:
+        logger.error(f"Error building filters: {str(e)}")
+        return []
+
+
+def build_search_query() -> str:
+    """Build the search query using selected category and subcategory with validation."""
+    try:
+        if not validate_category(st.session_state.selected_category, st.session_state.selected_subcategory):
+            return ""
+            
+        if st.session_state.selected_category == "All Categories":
+            return ""
+        
+        query = st.session_state.selected_category
+        if st.session_state.selected_subcategory:
+            query += f" {st.session_state.selected_subcategory}"
+        return query
+    except Exception as e:
+        logger.error(f"Error building search query: {str(e)}")
+        return ""
+
+
+@st.dialog("Select Category")
+def category_dialog() -> None:
+    """Display the category selection dialog with validation."""
+    try:
+        st.markdown("### Select Category")
+        
+        # Main category selection
+        main_category = st.selectbox(
+            "Main Category",
+            options=list(CATEGORIES.keys()),
+            index=list(CATEGORIES.keys()).index(st.session_state.selected_category),
+            key="dialog_main_category_select"
+        )
+        
+        # Subcategory selection
+        subcategory = None
+        if main_category != "All Categories" and CATEGORIES[main_category]:
+            subcategory = st.selectbox(
+                "Subcategory",
+                options=CATEGORIES[main_category],
+                index=0 if not st.session_state.selected_subcategory else 
+                      CATEGORIES[main_category].index(st.session_state.selected_subcategory),
+                key="dialog_subcategory_select"
+            )
+        
+        # Dialog buttons
+        col1, col2 = st.columns(2)
         with col1:
-            category = st.selectbox(
-                "Category",
-                options=[
-                    "All Categories",
-                    "Electronics",
-                    "Fashion",
-                    "Home & Garden",
-                    "Sports & Leisure",
-                    "Toys & Hobbies",
-                    "Automotive",
-                    "Health & Beauty",
-                    "Jewelry & Watches",
-                    "Musical Instruments",
-                    "Office Products",
-                    "Pet Supplies",
-                    "Books & Magazines",
-                    "Musical Instruments",
-                    "Industrial & Scientific"
-                ],
-                index=0
-            )
-            condition = st.selectbox(
-                "Condition",
-                options=["Any", "New", "Used", "Refurbished", "For parts or not working"],
-                index=0
-            )
-            location = st.selectbox(
-                "Location",
-                options=["Worldwide", "United States", "Europe", "Asia", "Australia"],
-                index=0
-            )
-            
+            if st.button("Apply", key="dialog_apply_category"):
+                if validate_category(main_category, subcategory):
+                    st.session_state.selected_category = main_category
+                    st.session_state.selected_subcategory = subcategory
+                    st.rerun()
+                else:
+                    st.error("Invalid category selection. Please try again.")
         with col2:
-            price_range = st.slider(
-                "Maximum Price (DHS)",
-                min_value=0,
-                max_value=100000,
-                value=100000,
-                step=100,
-                format="%d",
+            if st.button("Cancel", key="dialog_cancel_category"):
+                st.rerun()
+    except Exception as e:
+        logger.error(f"Error in category dialog: {str(e)}")
+        st.error("An error occurred in the category selection. Please try again.")
+
+
+def perform_search(search_query: str, filters: List[str], sort_by: str, items_per_page: int) -> List[Dict[str, Any]]:
+    """Perform the eBay search with retry logic."""
+    for attempt in range(MAX_RETRIES):
+        try:
+            items = ebay_api.search_items(
+                search_query,
+                limit=items_per_page,
+                sort=SORT_MAP[sort_by],
+                filters=",".join(filters) if filters else None
             )
-            sort_by = st.selectbox(
-                "Sort by",
-                options=["Best Match", "Price: Low to High", "Price: High to Low", "Time: ending soonest", "Time: newly listed"],
-                index=0
-            )
-            items_per_page = st.selectbox(
-                "Items per page",
-                options=[10, 25, 50, 100],
-                index=0
-            )
+            return [ebay_api.format_item(item) for item in items]
+        except Exception as e:
+            if attempt == MAX_RETRIES - 1:
+                raise e
+            logger.warning(f"Search attempt {attempt + 1} failed: {str(e)}")
+            continue
+
+
+def show_ebay_search_form() -> None:
+    """Display the eBay search form with category selection and filters."""
+    try:
+        initialize_session_state()
+        
+        with st.container():
+            col1, col2 = st.columns(2, gap="large")
             
-            # Add columns for the submit button
-            _, col_right = st.columns([5, 1], gap="small")
-            with col_right:
-                submit_button = st.form_submit_button("Search eBay")
-            
-        if submit_button:
-            try:
-                st.session_state.page = 0
+            with col1:
+                st.markdown("Choose Category")
+                if st.button(get_button_text(), key="main_category_button"):
+                    category_dialog()
                 
-                # Convert condition to eBay API format
-                condition_map = {
-                    "New": "NEW",
-                    "Used": "USED",
-                    "Refurbished": "REFURBISHED",
-                    "For parts or not working": "FOR_PARTS_OR_NOT_WORKING"
-                }
-                
-                # Convert sort option to eBay API format
-                sort_map = {
-                    "Best Match": "bestMatch",
-                    "Price: Low to High": "price",
-                    "Price: High to Low": "-price",
-                    "Time: ending soonest": "endTime",
-                    "Time: newly listed": "newlyListed"
-                }
-                
-                # Build filter string
-                filters = []
-                if condition != "Any":
-                    filters.append(f"conditions:{{{condition_map[condition]}}}")
-                if price_range < 100000.0:
-                    filters.append(f"price:[..{price_range}]")
-                
-                # Use category as search query if not "All Categories"
-                search_query = category if category != "All Categories" else ""
-                
-                items = ebay_api.search_items(
-                    search_query,
-                    limit=items_per_page,
-                    sort=sort_map[sort_by],
-                    filters=",".join(filters) if filters else None
+                condition = st.selectbox(
+                    "Condition",
+                    options=["Any", "New", "Used", "Refurbished", "For parts or not working"],
+                    index=0,
+                    key="main_condition_select"
+                )
+                location = st.selectbox(
+                    "Location",
+                    options=["Worldwide", "United States", "Europe", "Asia", "Australia"],
+                    index=0,
+                    key="main_location_select"
                 )
                 
-                st.session_state.search_results = [ebay_api.format_item(item) for item in items]
-                st.session_state.has_search = True
-            except Exception as e:
-                st.error(f"Error searching eBay: {str(e)}")
+            with col2:
+                price_range = st.slider(
+                    "Maximum Price (DHS)",
+                    min_value=DEFAULT_PRICE_RANGE[0],
+                    max_value=DEFAULT_PRICE_RANGE[1],
+                    value=DEFAULT_PRICE_RANGE[1],
+                    step=PRICE_STEP,
+                    format="%d",
+                    key="main_price_slider"
+                )
+                sort_by = st.selectbox(
+                    "Sort by",
+                    options=list(SORT_MAP.keys()),
+                    index=0,
+                    key="main_sort_select"
+                )
+                items_per_page = st.selectbox(
+                    "Items per page",
+                    options=ITEMS_PER_PAGE_OPTIONS,
+                    index=0,
+                    key="main_items_per_page_select"
+                )
+                
+                _, col_right = st.columns([5, 1], gap="small")
+                with col_right:
+                    if st.button("Search eBay", key="main_search_button"):
+                        try:
+                            st.session_state.page = 0
+                            
+                            filters = build_search_filters(condition, price_range)
+                            search_query = build_search_query()
+                            
+                            items = perform_search(search_query, filters, sort_by, items_per_page)
+                            
+                            st.session_state.search_results = items
+                            st.session_state.has_search = True
+                        except Exception as e:
+                            handle_search_error(e)
+    except Exception as e:
+        logger.error(f"Error in search form: {str(e)}")
+        st.error("An unexpected error occurred. Please try again later.")
 
 
 def show_search_results() -> None:
+    """Display the search results with sorting options."""
     st.header("Suppliers Listings")
     
     if "page" not in st.session_state:
@@ -279,7 +563,7 @@ def show_search_results() -> None:
     if "search_results" not in st.session_state:
         st.session_state.search_results = []
         
-    sort_by = st.selectbox("Sort by", options=list(SORT_OPTIONS.keys()), index=0)
+    sort_by = st.selectbox("Sort by", options=list(SORT_MAP.keys()), index=0)
     
     items = st.session_state.search_results if st.session_state.has_search and st.session_state.search_results else all_supplier
     sorted_items = sort_items(items, sort_by)
