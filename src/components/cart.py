@@ -6,12 +6,16 @@ class Cart:
     """
     A class to manage a shopping cart for eBay items.
     """
-    
+
     def __init__(self):
         """Initialize an empty cart."""
         self.items = []
         self.clean_data = []
-        
+
+        if "selected_cart" not in st.session_state:
+            st.session_state.selected_cart = []
+
+
     def add_item(self, item: Dict[str, Any]) -> None:
         """
         Add an item to the cart.
@@ -27,6 +31,7 @@ class Cart:
         
         self.items.append(cart_item)
         self.clean_data = self.prepare_data_to_chat()
+        st.session_state.selected_cart = self.get_cart_data_string()
         
     def remove_item(self, item_id: Any) -> None:
         """
@@ -36,7 +41,8 @@ class Cart:
             item_id (Any): The ID of the item to remove
         """
         self.items = [item for item in self.items if item.get('id') != item_id]
-        
+        st.session_state.selected_cart = self.get_cart_data_string()
+
     def is_item_in_cart(self, item_id: Any) -> bool:
         """
         Check if an item is in the cart.
@@ -92,10 +98,10 @@ class Cart:
         total_price = 0
         for i, item in enumerate(self.items):
             with st.container(border=True):
-                col1, col2, col3 = st.columns([3, 2, 1])
+                col1, col2 = st.columns([3, 2])
                 
                 with col1:
-                    st.subheader(item["title"])
+                    st.markdown(item["title"])
                     st.markdown(f"👤 **Seller:** {item['seller']}")
                     st.markdown(f"**Condition:** {item['condition']}")
                 
@@ -103,30 +109,33 @@ class Cart:
                     try:
                         price = float(item['price']) * 3.65
                         total_price += price
-                        st.metric("💰 Price", f"AED {price:.2f}")
+                        st.metric("💰 **Price**", f"AED {price:.2f}")
+                        
                     except (ValueError, TypeError):
-                        st.metric("💰 Price", "N/A")
-                
-                with col3:
+                        st.metric("💰 **Price**", "N/A")
+
+                    st.markdown(f"⭐ **Rating:** {item.get('rating', 'Unknown')}")
+                    
                     if st.button("Remove", key=f"remove_from_cart_{i}"):
                         self.remove_item(item.get('id', hash(item['title'])))
                         st.rerun()
-        
         st.divider()
         st.metric("Total", f"AED {total_price:.2f}")
 
-        if st.button("Export to chat"):
-            try:
-                chatbot = st.session_state.chatbot_client
-            except:
-                st.error("No Chatbot found")
-            data = self.get_cart_data_string()
-            response = chatbot.send_message(data)
-            if "messages" not in st.session_state:
-                st.session_state.messages = []
-            st.session_state.messages.append(
-                    {"role": "assistant", "content": response}
-                )
+        # if st.button("Export to chat"):
+        #     try:
+        #         chatbot = st.session_state.chatbot_client
+        #     except:
+        #         st.error("No Chatbot found")
+        #     data = self.get_cart_data_string()
+        #     response = chatbot.send_message(data)
+
+        #     st.session_state.messages.append(
+        #         {"role": "user", "content": data}
+        #     )
+        #     st.session_state.messages.append(
+        #         {"role": "assistant", "content": response}
+        #     )
             # st.rerun()
 
 
@@ -143,7 +152,9 @@ class Cart:
                 'title': item.get('title', ''),
                 'price': item.get('price', '0.00'),
                 'condition': item.get('condition', 'Unknown'),
-                'seller': item.get('seller', 'Unknown')
+                'seller': item.get('seller', 'Unknown'),
+                'comments': item.get('comments', 'Unknown'),
+                'rating': item.get('rating', 'Unknown')
             }
             cleaned_items.append(cleaned_item)
         return cleaned_items
@@ -170,7 +181,9 @@ class Cart:
                     f"{item.get('title', 'N/A')}|"
                     f"{item.get('price', '0.00')}|"
                     f"{item.get('condition', 'Unknown')}|"
-                    f"{item.get('seller', 'Unknown')}"
+                    f"{item.get('seller', 'Unknown')}|"
+                    f"{item.get('comments', 'Unknown')}|"
+                    f"{item.get('rating', 'Unknown')}"
                 )
                 item_strings.append(item_str)
             except Exception as e:

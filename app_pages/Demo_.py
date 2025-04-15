@@ -26,7 +26,11 @@ with st.expander("AMPA searches Alibaba's vast database to find matching supplie
 # Add shopping cart display
 st.header("Shopping Cart", divider=True)
 with st.expander("View and manage items in your shopping cart"):
-    show_cart()
+    col_cart, col_chat = st.columns([2, 3], gap="small")
+    with col_cart:
+        show_cart()
+    with col_chat:
+        show_chatbot()
 
 # section_header(
 #     "Evaluate with Chatbot",
@@ -38,7 +42,7 @@ with st.expander("View and manage items in your shopping cart"):
 #     show_chatbot()
 
 st.header("Ask your AI to Find the Best Supplier", divider=True)
-show_chatbot()
+# show_chatbot()
 
 
 show_header(

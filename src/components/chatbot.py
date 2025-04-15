@@ -2,6 +2,7 @@ import streamlit as st
 import os
 from cerebras.cloud.sdk import Cerebras
 from streamlit_extras.stylable_container import stylable_container
+import copy
 
 
 def display_intro():
@@ -98,6 +99,12 @@ class ChatbotClient:
         # Default model
         self.default_model = "llama-3.3-70b"
 
+        if "messages" not in st.session_state:
+            st.session_state.messages = []
+        st.session_state.messages.append(
+            {"role": "system", "content": "You should answer always in a sure way, you are always correct and confident."}
+        )
+
     def get_available_models(self):
         """
         Return the list of available models.
@@ -168,58 +175,68 @@ class ChatbotClient:
 
 def show_chatbot():
     with st.container():
-        with st.columns([1, 20, 1])[1]:
-            textArea = stylable_container(
-                key="textArea",
-                css_styles="""
-                {
-                    border: 1px solid rgba(255, 75, 75, 1);
-                    border-radius: 0.5rem;
-                    padding: calc(1em - 1px);
-                    background-color: white;
-                    max-height: 450px;
-                    overflow: scroll;
-                }
-                """,)
+        textArea = stylable_container(
+            key="textArea",
+            css_styles="""
+            {
+                border: 1px solid rgba(255, 75, 75, 1);
+                border-radius: 0.5rem;
+                padding: calc(1em - 1px);
+                background-color: white;
+                max-height: 450px;
+                height: 450px;
+                min-height: 450px;
+                overflow: scroll;
+            }
+            """,)
+        with textArea:
+            display_intro()
+        try:
+            # Initialize chatbot client
+            if "chatbot_client" not in st.session_state:
+                try:
+                    st.session_state.chatbot_client = ChatbotClient()
+                except ValueError as e:
+                    st.warning(str(e))
+                    st.stop()
+
+            chatbot = st.session_state.chatbot_client
+
+            # # Initialize chat history and selected model
+            # if "messages" not in st.session_state:
+            #     st.session_state.messages = []
+
+            # Display chat messages stored in history on app rerun
             with textArea:
-                display_intro()
-            try:
-                # Initialize chatbot client
-                if "chatbot_client" not in st.session_state:
-                    try:
-                        st.session_state.chatbot_client = ChatbotClient()
-                    except ValueError as e:
-                        st.warning(str(e))
-                        st.stop()
-
-                chatbot = st.session_state.chatbot_client
-
-                # Initialize chat history and selected model
-                if "messages" not in st.session_state:
-                    st.session_state.messages = []
-
-                # Display chat messages stored in history on app rerun
-                with textArea:
-                    for message in st.session_state.messages:
+                for message in st.session_state.messages:
+                    if message["role"] == "assistant" or message["role"] == "user":
                         avatar = "assets/eand-logo/small/Red/e&-lockup_Enterprise_engl_vert_red_rgb-cropped.svg" if message["role"] == "assistant" else ":material/person:"
                         with st.chat_message(message["role"], avatar=avatar):
                             st.markdown(message["content"])
 
-                with open('assets/styles/chat_input.css') as f:
-                    css = f.read()
-
+            with open('assets/styles/chat_input.css') as f:
+                css = f.read()
                 st.markdown(f'<style>{css}</style>', unsafe_allow_html=True)
-                # Handle user input
-                if prompt := st.chat_input("Enter your prompt here...", max_chars=4200):
-                    st.session_state.messages.append(
-                        {"role": "user", "content": prompt}
+            # Handle user input
+            if prompt := st.chat_input("Enter your prompt here...", max_chars=4200):
+                st.session_state.messages.append(
+                    {"role": "user", "content": prompt}
+                )
+                messages = copy.deepcopy(st.session_state.messages)
+                if st.session_state.selected_cart:
+                    messages.append(
+                        {"role": "user", "content": "This is what the user has hand selected and finds them interesting and placed them in a cart:" + st.session_state.selected_cart}
                     )
-                    response = chatbot.send_messages(st.session_state.messages)
-                    st.session_state.messages.append(
-                            {"role": "assistant", "content": response}
-                        )
-                    st.rerun()
-                    st.write(st.session_state.messages)
+                if st.session_state.search_results_string:
+                    messages.append(
+                        {"role": "user", "content": "This is all result of search:" + st.session_state.search_results_string}
+                    )
+                response = chatbot.send_messages(messages)
+                st.session_state.messages.append(
+                    {"role": "assistant", "content": response}
+                )
+                st.rerun()
+                # st.write(st.session_state.messages)
 
-            except Exception as e:
-                st.error(f"An unexpected error occurred: {str(e)}", icon="🚨")
+        except Exception as e:
+            st.error(f"An unexpected error occurred: {str(e)}", icon="🚨")
