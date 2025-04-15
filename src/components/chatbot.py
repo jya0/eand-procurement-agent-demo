@@ -98,6 +98,12 @@ class ChatbotClient:
         # Default model
         self.default_model = "llama-3.3-70b"
 
+        if "messages" not in st.session_state:
+            st.session_state.messages = []
+        st.session_state.messages.append(
+            {"role": "system", "content": ""}
+        )
+
     def get_available_models(self):
         """
         Return the list of available models.
@@ -201,15 +207,14 @@ def show_chatbot():
                 # Display chat messages stored in history on app rerun
                 with textArea:
                     for message in st.session_state.messages:
-                        if message["role"] != "system":
+                        if message["role"] == "assistant" or message["role"] == "user":
                             avatar = "assets/eand-logo/small/Red/e&-lockup_Enterprise_engl_vert_red_rgb-cropped.svg" if message["role"] == "assistant" else ":material/person:"
                             with st.chat_message(message["role"], avatar=avatar):
                                 st.markdown(message["content"])
 
                 with open('assets/styles/chat_input.css') as f:
                     css = f.read()
-
-                st.markdown(f'<style>{css}</style>', unsafe_allow_html=True)
+                    st.markdown(f'<style>{css}</style>', unsafe_allow_html=True)
                 # Handle user input
                 if prompt := st.chat_input("Enter your prompt here...", max_chars=4200):
                     st.session_state.messages.append(

@@ -122,10 +122,9 @@ class Cart:
                 st.error("No Chatbot found")
             data = self.get_cart_data_string()
             response = chatbot.send_message(data)
-            if "messages" not in st.session_state:
-                st.session_state.messages = []
+
             st.session_state.messages.append(
-                {"role": "system", "content": data}
+                {"role": "data", "content": data}
             )
             st.session_state.messages.append(
                 {"role": "assistant", "content": response}
