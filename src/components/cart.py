@@ -173,7 +173,9 @@ class Cart:
                     f"{item.get('title', 'N/A')}|"
                     f"{item.get('price', '0.00')}|"
                     f"{item.get('condition', 'Unknown')}|"
-                    f"{item.get('seller', 'Unknown')}"
+                    f"{item.get('seller', 'Unknown')}|"
+                    f"{item.get('comments', 'Unknown')}|"
+                    f"{item.get('rating', 'Unknown')}"
                 )
                 item_strings.append(item_str)
             except Exception as e:

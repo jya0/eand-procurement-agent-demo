@@ -534,7 +534,7 @@ def show_ebay_search_form() -> None:
                 
                 _, col_right = st.columns([5, 1], gap="small")
                 with col_right:
-                    if st.button("Search eBay", key="main_search_button"):
+                    if st.button("Search eBay", key="main_search_button", type="primary"):
                         try:
                             st.session_state.page = 0
                             
