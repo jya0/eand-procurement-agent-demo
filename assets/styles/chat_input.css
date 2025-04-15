@@ -3,62 +3,28 @@
     color: white;
 } */
 
-.st-emotion-cache-gsyaok {
+/* .st-emotion-cache-gsyaok {
     background-color: #FFFFFF;
-}
+} */
 
-.st-bb {
+/* .st-bb {
     background-color: #FFFFFF;
     color: #4B0F1E;
-}
-
-/* .st-cd {
-    background-color: blue;
-}
-
-.st-db {
-    background-color: blue;
 } */
 
-/* .st-dc {
-    background-color: blue;
+/* div[data-testid="stChatInput"] {
+    background-color: #FFFFFF;
+} */
+  
+div[data-testid="stChatInput"] textarea {
+    background-color: #FFFFFF !important;
+    color: #4B0F1E !important;
 }
 
-.st-dd {
-    background-color: blue;
+div[data-testid="stChatInput"] .st-emotion-cache-gsyaok {
+    background-color: #FFFFFF !important;
 }
 
-.st-de {
-    background-color: blue;
+div[data-testid="stChatInput"] button {
+    color: #4B0F1E !important;
 }
-.st-ce {
-    background-color: blue;
-}
-.st-cg {
-    background-color: blue;
-}
-.st-cf {
-    background-color: blue;
-}
-.st-ch {
-    background-color: blue;
-}
-.st-ci {
-    background-color: blue;
-}
-.st-b7 {
-    background-color: blue;
-}
-.st-dk {
-    background-color: blue;
-} */
-/* .st-c8 {
-    background-color: blue;
-} */
-/* .st-be {
-    background-color: blue;
-} */
-/* .st-dl {
-    background-color: blue;
-} */
-
