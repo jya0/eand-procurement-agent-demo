@@ -168,7 +168,7 @@ class ChatbotClient:
 
 def show_chatbot():
     with st.container():
-        with st.columns([1, 11, 1])[1]:
+        with st.columns([1, 20, 1])[1]:
             textArea = stylable_container(
                 key="textArea",
                 css_styles="""
@@ -201,7 +201,7 @@ def show_chatbot():
                 # Display chat messages stored in history on app rerun
                 with textArea:
                     for message in st.session_state.messages:
-                        avatar = "assets/eand-logo/small/Red/e&-lockup_Enterprise_engl_vert_red_rgb-cropped.svg" if message["role"] == "assistant" else "🦔"
+                        avatar = "assets/eand-logo/small/Red/e&-lockup_Enterprise_engl_vert_red_rgb-cropped.svg" if message["role"] == "assistant" else ":material/person:"
                         with st.chat_message(message["role"], avatar=avatar):
                             st.markdown(message["content"])
 

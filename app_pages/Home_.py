@@ -1,6 +1,6 @@
 import streamlit as st
 from src.components.footer import streamlit_footer
-from src.components.roi import streamlit_roi_ver9
+from src.components.roi import streamlit_roi_ver10
 
 
 header_col1, header_col2 = st.columns([1, 3], gap="large")
@@ -113,7 +113,7 @@ with tabs[2]:
         },
         {
             "title": "Better Decision-Making",
-            "description": "Leverage reasoning AI models with real time data to meet search criteria.",
+            "description": "Deep Reasoning AI with real time data to meet search criteria.",
             "icon": "assets/images/ampa-benefits/ampa-benefit-decision-large-fast.gif",
         },
         {
@@ -156,12 +156,7 @@ with tabs[2]:
     #         st.subheader(benefit["title"], divider=True, anchor=False)
     #         st.info(benefit["description"])
 
-    # streamlit_roi_ver2()
-    # streamlit_roi_ver3()
-    # streamlit_roi_ver5()
-    # streamlit_roi_ver6()
-    # streamlit_roi_ver7()
-    streamlit_roi_ver9()
+    streamlit_roi_ver10()
 
 # Get Started Tab
 with tabs[3]:
