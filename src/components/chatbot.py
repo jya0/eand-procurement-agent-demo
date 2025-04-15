@@ -201,9 +201,10 @@ def show_chatbot():
                 # Display chat messages stored in history on app rerun
                 with textArea:
                     for message in st.session_state.messages:
-                        avatar = "assets/eand-logo/small/Red/e&-lockup_Enterprise_engl_vert_red_rgb-cropped.svg" if message["role"] == "assistant" else ":material/person:"
-                        with st.chat_message(message["role"], avatar=avatar):
-                            st.markdown(message["content"])
+                        if message["role"] != "system":
+                            avatar = "assets/eand-logo/small/Red/e&-lockup_Enterprise_engl_vert_red_rgb-cropped.svg" if message["role"] == "assistant" else ":material/person:"
+                            with st.chat_message(message["role"], avatar=avatar):
+                                st.markdown(message["content"])
 
                 with open('assets/styles/chat_input.css') as f:
                     css = f.read()
@@ -216,8 +217,8 @@ def show_chatbot():
                     )
                     response = chatbot.send_messages(st.session_state.messages)
                     st.session_state.messages.append(
-                            {"role": "assistant", "content": response}
-                        )
+                        {"role": "assistant", "content": response}
+                    )
                     st.rerun()
                     st.write(st.session_state.messages)
 

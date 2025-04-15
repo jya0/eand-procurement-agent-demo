@@ -125,8 +125,11 @@ class Cart:
             if "messages" not in st.session_state:
                 st.session_state.messages = []
             st.session_state.messages.append(
-                    {"role": "assistant", "content": response}
-                )
+                {"role": "system", "content": data}
+            )
+            st.session_state.messages.append(
+                {"role": "assistant", "content": response}
+            )
             # st.rerun()
 
 
