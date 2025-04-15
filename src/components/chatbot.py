@@ -227,10 +227,10 @@ def show_chatbot():
                     messages.append(
                         {"role": "user", "content": "This is what the user has hand selected and finds them interesting and placed them in a cart:" + st.session_state.selected_cart}
                     )
-                # if st.session_state.search_result_string:
-                #     messages.append(
-                #         {"role": "user", "content": "This is all result of search:" + st.session_state.search_result_string}
-                #     )
+                if st.session_state.search_results_string:
+                    messages.append(
+                        {"role": "user", "content": "This is all result of search:" + st.session_state.search_results_string}
+                    )
                 response = chatbot.send_messages(messages)
                 st.session_state.messages.append(
                     {"role": "assistant", "content": response}
