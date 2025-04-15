@@ -100,8 +100,9 @@ class ChatbotClient:
 
         if "messages" not in st.session_state:
             st.session_state.messages = []
+        if 
         st.session_state.messages.append(
-            {"role": "system", "content": ""}
+            {"role": "system", "content": "You should answer always in a sure way, you are always correct and confident."}
         )
 
     def get_available_models(self):
@@ -184,11 +185,13 @@ def show_chatbot():
                     padding: calc(1em - 1px);
                     background-color: white;
                     max-height: 450px;
+                    height: 450px;
+                    min-height: 450px;
                     overflow: scroll;
                 }
                 """,)
-            with textArea:
-                display_intro()
+            # with textArea:
+                # display_intro()
             try:
                 # Initialize chatbot client
                 if "chatbot_client" not in st.session_state:
@@ -225,7 +228,7 @@ def show_chatbot():
                         {"role": "assistant", "content": response}
                     )
                     st.rerun()
-                    st.write(st.session_state.messages)
+                    # st.write(st.session_state.messages)
 
             except Exception as e:
                 st.error(f"An unexpected error occurred: {str(e)}", icon="🚨")

@@ -124,7 +124,7 @@ class Cart:
             response = chatbot.send_message(data)
 
             st.session_state.messages.append(
-                {"role": "data", "content": data}
+                {"role": "user", "content": data}
             )
             st.session_state.messages.append(
                 {"role": "assistant", "content": response}
