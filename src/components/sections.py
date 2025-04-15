@@ -178,7 +178,7 @@ def show_image(image_path: str) -> None:
 
 
 def show_ebay_card(item: Dict[str, Any]) -> None:
-    with st.container(border=True):
+    with st.container(border=True, height=600):
         st.header(f"👤 {item['seller']}")
             
         with st.container():
@@ -220,7 +220,7 @@ def show_ebay_card(item: Dict[str, Any]) -> None:
 
 
 def show_supplier_card(supplier: Dict[str, Any]) -> None:
-    with st.container(border=True):
+    with st.container(border=True, height=400):
         with st.container():
             st.header(supplier["name"])
             show_image(supplier["image"])

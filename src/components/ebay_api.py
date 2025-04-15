@@ -137,7 +137,23 @@ class EbayAPI:
             "Product was a complete disappointment."
         ]
 
-        all_comments = positive_comments + mixed_comments + negative_comments
+        # Select comments based on a weighted random distribution
+        # 60% chance of positive, 30% chance of mixed, 10% chance of negative
+        comment_type = random.choices(
+            ['positive', 'mixed', 'negative'],
+            weights=[0.6, 0.3, 0.1],
+            k=1
+        )[0]
+
+        if comment_type == 'positive':
+            comments = random.sample(positive_comments, 5)
+            rating = random.randint(4, 5)  # High ratings for positive comments
+        elif comment_type == 'mixed':
+            comments = random.sample(mixed_comments, 5)
+            rating = random.randint(3, 4)  # Middle ratings for mixed comments
+        else:
+            comments = random.sample(negative_comments, 5)
+            rating = random.randint(1, 3)  # Lower ratings for negative comments
 
         return {
             "title": item.get("title", "No title"),
@@ -147,6 +163,6 @@ class EbayAPI:
             "seller": item.get("seller", {}).get("username", "Unknown"),
             "url": item.get("itemWebUrl", "#"),
             "verified": random.random() < 0.8,
-            "rating": random.randint(2, 5),
-            "comments": random.sample(all_comments, 5)
+            "rating": rating,
+            "comments": comments
         } 
