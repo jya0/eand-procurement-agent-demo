@@ -2,6 +2,7 @@ import streamlit as st
 import os
 from cerebras.cloud.sdk import Cerebras
 from streamlit_extras.stylable_container import stylable_container
+import copy
 
 
 def display_intro():
@@ -201,9 +202,9 @@ def show_chatbot():
 
             chatbot = st.session_state.chatbot_client
 
-            # Initialize chat history and selected model
-            if "messages" not in st.session_state:
-                st.session_state.messages = []
+            # # Initialize chat history and selected model
+            # if "messages" not in st.session_state:
+            #     st.session_state.messages = []
 
             # Display chat messages stored in history on app rerun
             with textArea:
@@ -221,16 +222,16 @@ def show_chatbot():
                 st.session_state.messages.append(
                     {"role": "user", "content": prompt}
                 )
-                messages = st.session_state.messages
-                if st.session_state.cart:
+                messages = copy.deepcopy(st.session_state.messages)
+                if st.session_state.selected_cart:
                     messages.append(
-                        {"role": "user", "content": "This is what the user has hand selected and finds them interesting:" + st.session_state.cart}
+                        {"role": "user", "content": "This is what the user has hand selected and finds them interesting and placed them in a cart:" + st.session_state.selected_cart}
                     )
-                if st.session_state.search_result:
-                    messages.append(
-                        {"role": "user", "content": "This is all result of search:" + st.session_state.cart}
-                    )
-                response = chatbot.send_messages(st.session_state.messages)
+                # if st.session_state.search_result_string:
+                #     messages.append(
+                #         {"role": "user", "content": "This is all result of search:" + st.session_state.search_result_string}
+                #     )
+                response = chatbot.send_messages(messages)
                 st.session_state.messages.append(
                     {"role": "assistant", "content": response}
                 )

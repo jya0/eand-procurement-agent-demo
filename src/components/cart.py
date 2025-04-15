@@ -6,12 +6,16 @@ class Cart:
     """
     A class to manage a shopping cart for eBay items.
     """
-    
+
     def __init__(self):
         """Initialize an empty cart."""
         self.items = []
         self.clean_data = []
-        
+
+        if "selected_cart" not in st.session_state:
+            st.session_state.selected_cart = []
+
+
     def add_item(self, item: Dict[str, Any]) -> None:
         """
         Add an item to the cart.
@@ -27,6 +31,7 @@ class Cart:
         
         self.items.append(cart_item)
         self.clean_data = self.prepare_data_to_chat()
+        st.session_state.selected_cart = self.get_cart_data_string()
         
     def remove_item(self, item_id: Any) -> None:
         """
@@ -36,7 +41,8 @@ class Cart:
             item_id (Any): The ID of the item to remove
         """
         self.items = [item for item in self.items if item.get('id') != item_id]
-        
+        st.session_state.selected_cart = self.get_cart_data_string()
+
     def is_item_in_cart(self, item_id: Any) -> bool:
         """
         Check if an item is in the cart.
@@ -116,20 +122,20 @@ class Cart:
         st.divider()
         st.metric("Total", f"AED {total_price:.2f}")
 
-        if st.button("Export to chat"):
-            try:
-                chatbot = st.session_state.chatbot_client
-            except:
-                st.error("No Chatbot found")
-            data = self.get_cart_data_string()
-            response = chatbot.send_message(data)
+        # if st.button("Export to chat"):
+        #     try:
+        #         chatbot = st.session_state.chatbot_client
+        #     except:
+        #         st.error("No Chatbot found")
+        #     data = self.get_cart_data_string()
+        #     response = chatbot.send_message(data)
 
-            st.session_state.messages.append(
-                {"role": "user", "content": data}
-            )
-            st.session_state.messages.append(
-                {"role": "assistant", "content": response}
-            )
+        #     st.session_state.messages.append(
+        #         {"role": "user", "content": data}
+        #     )
+        #     st.session_state.messages.append(
+        #         {"role": "assistant", "content": response}
+        #     )
             # st.rerun()
 
 

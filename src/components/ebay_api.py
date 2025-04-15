@@ -165,4 +165,4 @@ class EbayAPI:
             "verified": random.random() < 0.8,
             "rating": rating,
             "comments": comments
-        } 
+        }
