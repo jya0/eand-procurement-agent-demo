@@ -206,6 +206,10 @@ def show_chatbot():
                             st.markdown(message["content"])
 
                 # Handle user input
+                with open('assets/styles/chat_input.css') as f:
+                    css = f.read()
+
+                st.markdown(f'<style>{css}</style>', unsafe_allow_html=True)
                 if prompt := st.chat_input("Enter your prompt here...", max_chars=4200):
                     st.session_state.messages.append(
                         {"role": "user", "content": prompt}

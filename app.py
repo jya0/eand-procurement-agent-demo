@@ -9,11 +9,6 @@ st.set_page_config(
 )
 
 
-with open('assets/styles/chat_input.css') as f:
-    css = f.read()
-
-st.markdown(f'<style>{css}</style>', unsafe_allow_html=True)
-
 ALL_PAGES = [
     st.Page(
         page="app_pages/Home_.py",
