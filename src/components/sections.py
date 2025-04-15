@@ -552,6 +552,14 @@ def show_ebay_search_form() -> None:
         st.error("An unexpected error occurred. Please try again later.")
 
 
+def get_data_string() -> str:
+    if "search_results" not in st.session_state:
+        st.session_state.search_results = []
+    item_strings = []
+    for item in st.session_state.search_results:
+        item_strings.append(f"{item.get('title', 'N/A')}|{item.get('price', '0.00')}|{item.get('condition', 'Unknown')}|{item.get('seller', 'Unknown')}|{item.get('comments', 'Unknown')}|{item.get('rating', 'Unknown')}")
+    return "\n".join(item_strings)
+
 def show_search_results() -> None:
     """Display the search results with sorting options."""
     st.header("Suppliers Listings")
@@ -562,6 +570,9 @@ def show_search_results() -> None:
         st.session_state.has_search = False
     if "search_results" not in st.session_state:
         st.session_state.search_results = []
+    st.session_state.search_results_string = get_data_string()
+    print(st.session_state.search_results_string)
+
         
     sort_by = st.selectbox("Sort by", options=list(SORT_MAP.keys()), index=0)
     
