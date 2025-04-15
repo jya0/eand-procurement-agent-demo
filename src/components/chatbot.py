@@ -100,7 +100,6 @@ class ChatbotClient:
 
         if "messages" not in st.session_state:
             st.session_state.messages = []
-        if 
         st.session_state.messages.append(
             {"role": "system", "content": "You should answer always in a sure way, you are always correct and confident."}
         )
