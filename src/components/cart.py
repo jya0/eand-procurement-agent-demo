@@ -92,10 +92,10 @@ class Cart:
         total_price = 0
         for i, item in enumerate(self.items):
             with st.container(border=True):
-                col1, col2, col3 = st.columns([3, 2, 1])
+                col1, col2 = st.columns([3, 2])
                 
                 with col1:
-                    st.subheader(item["title"])
+                    st.markdown(item["title"])
                     st.markdown(f"👤 **Seller:** {item['seller']}")
                     st.markdown(f"**Condition:** {item['condition']}")
                 
@@ -103,15 +103,16 @@ class Cart:
                     try:
                         price = float(item['price']) * 3.65
                         total_price += price
-                        st.metric("💰 Price", f"AED {price:.2f}")
+                        st.metric("💰 **Price**", f"AED {price:.2f}")
+                        
                     except (ValueError, TypeError):
-                        st.metric("💰 Price", "N/A")
-                
-                with col3:
+                        st.metric("💰 **Price**", "N/A")
+
+                    st.markdown(f"⭐ **Rating:** {item.get('rating', 'Unknown')}")
+                    
                     if st.button("Remove", key=f"remove_from_cart_{i}"):
                         self.remove_item(item.get('id', hash(item['title'])))
                         st.rerun()
-        
         st.divider()
         st.metric("Total", f"AED {total_price:.2f}")
 
