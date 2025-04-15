@@ -146,7 +146,7 @@ class Cart:
                 'price': item.get('price', '0.00'),
                 'condition': item.get('condition', 'Unknown'),
                 'seller': item.get('seller', 'Unknown'),
-                # 'comments': item.get('comments', 'Unknown'),
+                'comments': item.get('comments', 'Unknown'),
                 'rating': item.get('rating', 'Unknown')
             }
             cleaned_items.append(cleaned_item)
