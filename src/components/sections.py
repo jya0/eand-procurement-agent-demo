@@ -2,7 +2,7 @@ import streamlit as st
 from data.supliers import all_supplier
 from src.components.ebay_api import EbayAPI
 from src.components.cart import Cart
-from ampa.src.components.conf_variables import (
+from src.components.conf_variables import (
     CARDS_PER_PAGE,
     DEFAULT_PRICE_RANGE,
     PRICE_STEP,
