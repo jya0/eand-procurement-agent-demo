@@ -459,7 +459,7 @@ def show_search_results() -> None:
     if "search_results" not in st.session_state:
         st.session_state.search_results = []
     st.session_state.search_results_string = get_data_string()
-    print(st.session_state.search_results_string)
+    # print(st.session_state.search_results_string)
 
         
     sort_by = st.selectbox("Sort by", options=list(SORT_MAP.keys()), index=0)
