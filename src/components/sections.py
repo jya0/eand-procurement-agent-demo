@@ -39,7 +39,16 @@ CATEGORIES: Dict[str, List[str]] = {
         "Cameras & Photo",
         "TV, Video & Audio",
         "Video Games & Consoles",
-        "Smart Home & Security"
+        "Smart Home & Security",
+        "Computer Components",
+        "Networking",
+        "Printers & Scanners",
+        "Computer Accessories",
+        "Audio Equipment",
+        "Drones & Accessories",
+        "Virtual Reality",
+        "Wearable Technology",
+        "Electronic Accessories"
     ],
     "Fashion": [
         "Men's Clothing",
@@ -47,7 +56,21 @@ CATEGORIES: Dict[str, List[str]] = {
         "Shoes",
         "Jewelry & Watches",
         "Bags & Accessories",
-        "Kids' Clothing"
+        "Kids' Clothing",
+        "Men's Accessories",
+        "Women's Accessories",
+        "Men's Shoes",
+        "Women's Shoes",
+        "Kids' Shoes",
+        "Men's Watches",
+        "Women's Watches",
+        "Men's Jewelry",
+        "Women's Jewelry",
+        "Sunglasses",
+        "Hats & Caps",
+        "Belts & Suspenders",
+        "Ties & Bow Ties",
+        "Scarves & Wraps"
     ],
     "Home & Garden": [
         "Furniture",
@@ -55,7 +78,21 @@ CATEGORIES: Dict[str, List[str]] = {
         "Kitchen & Dining",
         "Bedding & Bath",
         "Garden & Outdoor",
-        "Tools & Home Improvement"
+        "Tools & Home Improvement",
+        "Lighting",
+        "Rugs & Carpets",
+        "Wall Art",
+        "Window Treatments",
+        "Storage & Organization",
+        "Cleaning Supplies",
+        "Home Security",
+        "Patio Furniture",
+        "Grills & Outdoor Cooking",
+        "Gardening Tools",
+        "Plants & Seeds",
+        "Pest Control",
+        "Home Appliances",
+        "Home Improvement Tools"
     ],
     "Sports & Leisure": [
         "Exercise & Fitness",
@@ -63,7 +100,21 @@ CATEGORIES: Dict[str, List[str]] = {
         "Outdoor Sports",
         "Team Sports",
         "Golf",
-        "Cycling"
+        "Cycling",
+        "Yoga & Pilates",
+        "Running",
+        "Swimming",
+        "Tennis",
+        "Basketball",
+        "Soccer",
+        "Baseball",
+        "Football",
+        "Hockey",
+        "Camping & Hiking",
+        "Fishing",
+        "Hunting",
+        "Water Sports",
+        "Winter Sports"
     ],
     "Toys & Hobbies": [
         "Action Figures",
@@ -71,7 +122,21 @@ CATEGORIES: Dict[str, List[str]] = {
         "Building Toys",
         "Games",
         "Model Trains",
-        "RC Vehicles"
+        "RC Vehicles",
+        "Board Games",
+        "Puzzles",
+        "Arts & Crafts",
+        "Musical Instruments",
+        "Collectibles",
+        "Trading Cards",
+        "Science & Education",
+        "Outdoor Toys",
+        "Baby & Toddler Toys",
+        "Electronic Toys",
+        "Toy Vehicles",
+        "Pretend Play",
+        "Party Supplies",
+        "Hobby Tools"
     ],
     "Automotive": [
         "Car Parts & Accessories",
@@ -79,7 +144,21 @@ CATEGORIES: Dict[str, List[str]] = {
         "Truck Parts",
         "Tools & Equipment",
         "Car Electronics",
-        "Tires & Wheels"
+        "Tires & Wheels",
+        "Interior Accessories",
+        "Exterior Accessories",
+        "Lighting",
+        "Audio & Video",
+        "GPS & Navigation",
+        "Car Care",
+        "Oils & Fluids",
+        "Brakes & Suspension",
+        "Engine Parts",
+        "Transmission",
+        "Body Parts",
+        "Performance Parts",
+        "Safety Equipment",
+        "Motorcycle Gear"
     ],
     "Health & Beauty": [
         "Fragrances",
@@ -87,7 +166,21 @@ CATEGORIES: Dict[str, List[str]] = {
         "Skin Care",
         "Hair Care",
         "Vitamins & Supplements",
-        "Personal Care"
+        "Personal Care",
+        "Bath & Body",
+        "Nail Care",
+        "Oral Care",
+        "Shaving & Hair Removal",
+        "Massage & Relaxation",
+        "Medical Supplies",
+        "Vision Care",
+        "Hearing Aids",
+        "First Aid",
+        "Sexual Wellness",
+        "Natural Remedies",
+        "Diet & Nutrition",
+        "Fitness Equipment",
+        "Wellness Products"
     ],
     "Jewelry & Watches": [
         "Fine Jewelry",
@@ -95,7 +188,21 @@ CATEGORIES: Dict[str, List[str]] = {
         "Watches",
         "Loose Diamonds",
         "Loose Gemstones",
-        "Jewelry Boxes"
+        "Jewelry Boxes",
+        "Men's Watches",
+        "Women's Watches",
+        "Children's Watches",
+        "Smart Watches",
+        "Necklaces",
+        "Bracelets",
+        "Earrings",
+        "Rings",
+        "Pendants",
+        "Brooches & Pins",
+        "Anklets",
+        "Body Jewelry",
+        "Jewelry Sets",
+        "Jewelry Care"
     ],
     "Musical Instruments": [
         "Guitars",
@@ -103,7 +210,21 @@ CATEGORIES: Dict[str, List[str]] = {
         "Drums & Percussion",
         "Brass Instruments",
         "Woodwind Instruments",
-        "Pro Audio Equipment"
+        "Pro Audio Equipment",
+        "String Instruments",
+        "Wind Instruments",
+        "Percussion Instruments",
+        "Electronic Instruments",
+        "Accessories",
+        "Sheet Music",
+        "Recording Equipment",
+        "Live Sound",
+        "DJ Equipment",
+        "Studio Equipment",
+        "Cases & Covers",
+        "Maintenance & Care",
+        "Instruction & Books",
+        "Parts & Components"
     ],
     "Office Products": [
         "Office Furniture",
@@ -111,7 +232,21 @@ CATEGORIES: Dict[str, List[str]] = {
         "Office Supplies",
         "Printers & Scanners",
         "Presentation Equipment",
-        "Shipping Supplies"
+        "Shipping Supplies",
+        "Desks & Workstations",
+        "Chairs",
+        "Storage & Organization",
+        "Paper Products",
+        "Writing Instruments",
+        "Notebooks & Pads",
+        "Calendars & Planners",
+        "Binders & Folders",
+        "Labels & Stickers",
+        "Envelopes & Mailers",
+        "Desk Accessories",
+        "Breakroom Supplies",
+        "Safety & Security",
+        "Office Decor"
     ],
     "Pet Supplies": [
         "Dog Supplies",
@@ -119,7 +254,21 @@ CATEGORIES: Dict[str, List[str]] = {
         "Fish Supplies",
         "Bird Supplies",
         "Reptile Supplies",
-        "Small Animal Supplies"
+        "Small Animal Supplies",
+        "Pet Food",
+        "Pet Treats",
+        "Pet Toys",
+        "Pet Beds",
+        "Pet Carriers",
+        "Pet Grooming",
+        "Pet Health",
+        "Pet Training",
+        "Pet Clothing",
+        "Pet Collars & Leashes",
+        "Pet Bowls & Feeders",
+        "Pet Cleaning",
+        "Pet Vitamins",
+        "Pet Accessories"
     ],
     "Books & Magazines": [
         "Fiction Books",
@@ -127,7 +276,21 @@ CATEGORIES: Dict[str, List[str]] = {
         "Textbooks",
         "Children's Books",
         "Magazines",
-        "Audiobooks"
+        "Audiobooks",
+        "Literature",
+        "Biographies",
+        "Business Books",
+        "Cookbooks",
+        "Art Books",
+        "History Books",
+        "Science Books",
+        "Travel Books",
+        "Self-Help Books",
+        "Religious Books",
+        "Educational Books",
+        "Comic Books",
+        "Rare Books",
+        "Digital Books"
     ],
     "Industrial & Scientific": [
         "Lab Equipment",
@@ -135,7 +298,21 @@ CATEGORIES: Dict[str, List[str]] = {
         "Safety Equipment",
         "Electrical Equipment",
         "Material Handling",
-        "Test Equipment"
+        "Test Equipment",
+        "Measuring Tools",
+        "Power Tools",
+        "Hand Tools",
+        "Fasteners",
+        "Adhesives & Sealants",
+        "Paints & Coatings",
+        "Cleaning Supplies",
+        "Safety Gear",
+        "Lab Supplies",
+        "Scientific Instruments",
+        "Industrial Chemicals",
+        "Packaging Materials",
+        "Industrial Hardware",
+        "Scientific Books"
     ]
 }
 
@@ -411,11 +588,16 @@ def build_search_query() -> str:
             return ""
             
         if st.session_state.selected_category == "All Categories":
-            return ""
+            return st.session_state.category_search if "category_search" in st.session_state else ""
         
         query = st.session_state.selected_category
         if st.session_state.selected_subcategory:
             query += f" {st.session_state.selected_subcategory}"
+        
+        # Add category search term if it exists
+        if "category_search" in st.session_state and st.session_state.category_search:
+            query += f" {st.session_state.category_search}"
+            
         return query
     except Exception as e:
         logger.error(f"Error building search query: {str(e)}")
@@ -492,9 +674,24 @@ def show_ebay_search_form() -> None:
             col1, col2 = st.columns(2, gap="large")
             
             with col1:
-                st.markdown("Choose Category")
-                if st.button(get_button_text(), key="main_category_button"):
-                    category_dialog()
+                st.markdown("""
+                    <style>
+                    div[data-testid="stButton"] button {
+                        height: 2em;
+                        width: 100%;
+                        white-space: normal;
+                        padding: 0.5em;
+                    }
+                    </style>
+                    """, unsafe_allow_html=True)
+                col_button, col_input = st.columns([1, 3], gap="small")
+                with col_button:
+                    st.markdown("Choose Category")
+                    if st.button(get_button_text(), key="main_category_button"):
+                        category_dialog()
+                with col_input:
+                    st.markdown("")
+                    st.text_input("Search within category", key="category_search", placeholder="Enter search term...")
                 
                 condition = st.selectbox(
                     "Condition",
