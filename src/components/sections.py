@@ -2,6 +2,18 @@ import streamlit as st
 from data.supliers import all_supplier
 from src.components.ebay_api import EbayAPI
 from src.components.cart import Cart
+from src.components.conf_variables import (
+    CARDS_PER_PAGE,
+    DEFAULT_PRICE_RANGE,
+    PRICE_STEP,
+    DEFAULT_ITEMS_PER_PAGE,
+    ITEMS_PER_PAGE_OPTIONS,
+    MAX_RETRIES,
+    ERROR_MESSAGES,
+    CATEGORIES,
+    CONDITION_MAP,
+    SORT_MAP
+)
 import math
 from typing import List, Dict, Any, Callable, Optional, Tuple
 import logging
@@ -10,155 +22,11 @@ import logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-CARDS_PER_PAGE = 6
 IMAGE_WIDTH = 300
 IMAGE_HEIGHT = 200
 
-# Constants
-DEFAULT_PRICE_RANGE = (0, 100000)
-PRICE_STEP = 100
-DEFAULT_ITEMS_PER_PAGE = 10
-ITEMS_PER_PAGE_OPTIONS = [10, 25, 50, 100]
-MAX_RETRIES = 3
-
-# Error messages
-ERROR_MESSAGES = {
-    "api_error": "An error occurred while searching eBay. Please try again later.",
-    "invalid_category": "Invalid category selected. Please try again.",
-    "invalid_subcategory": "Invalid subcategory selected. Please try again.",
-    "search_failed": "Search failed. Please check your parameters and try again.",
-    "session_error": "Session error. Please refresh the page and try again."
-}
-
-# Category mapping
-CATEGORIES: Dict[str, List[str]] = {
-    "All Categories": [],
-    "Electronics": [
-        "Computers & Tablets",
-        "Cell Phones & Accessories",
-        "Cameras & Photo",
-        "TV, Video & Audio",
-        "Video Games & Consoles",
-        "Smart Home & Security"
-    ],
-    "Fashion": [
-        "Men's Clothing",
-        "Women's Clothing",
-        "Shoes",
-        "Jewelry & Watches",
-        "Bags & Accessories",
-        "Kids' Clothing"
-    ],
-    "Home & Garden": [
-        "Furniture",
-        "Home Décor",
-        "Kitchen & Dining",
-        "Bedding & Bath",
-        "Garden & Outdoor",
-        "Tools & Home Improvement"
-    ],
-    "Sports & Leisure": [
-        "Exercise & Fitness",
-        "Sports Equipment",
-        "Outdoor Sports",
-        "Team Sports",
-        "Golf",
-        "Cycling"
-    ],
-    "Toys & Hobbies": [
-        "Action Figures",
-        "Dolls & Bears",
-        "Building Toys",
-        "Games",
-        "Model Trains",
-        "RC Vehicles"
-    ],
-    "Automotive": [
-        "Car Parts & Accessories",
-        "Motorcycle Parts",
-        "Truck Parts",
-        "Tools & Equipment",
-        "Car Electronics",
-        "Tires & Wheels"
-    ],
-    "Health & Beauty": [
-        "Fragrances",
-        "Makeup",
-        "Skin Care",
-        "Hair Care",
-        "Vitamins & Supplements",
-        "Personal Care"
-    ],
-    "Jewelry & Watches": [
-        "Fine Jewelry",
-        "Fashion Jewelry",
-        "Watches",
-        "Loose Diamonds",
-        "Loose Gemstones",
-        "Jewelry Boxes"
-    ],
-    "Musical Instruments": [
-        "Guitars",
-        "Keyboards & Pianos",
-        "Drums & Percussion",
-        "Brass Instruments",
-        "Woodwind Instruments",
-        "Pro Audio Equipment"
-    ],
-    "Office Products": [
-        "Office Furniture",
-        "Office Electronics",
-        "Office Supplies",
-        "Printers & Scanners",
-        "Presentation Equipment",
-        "Shipping Supplies"
-    ],
-    "Pet Supplies": [
-        "Dog Supplies",
-        "Cat Supplies",
-        "Fish Supplies",
-        "Bird Supplies",
-        "Reptile Supplies",
-        "Small Animal Supplies"
-    ],
-    "Books & Magazines": [
-        "Fiction Books",
-        "Non-Fiction Books",
-        "Textbooks",
-        "Children's Books",
-        "Magazines",
-        "Audiobooks"
-    ],
-    "Industrial & Scientific": [
-        "Lab Equipment",
-        "Industrial Equipment",
-        "Safety Equipment",
-        "Electrical Equipment",
-        "Material Handling",
-        "Test Equipment"
-    ]
-}
-
-# Condition mapping
-CONDITION_MAP: Dict[str, str] = {
-    "New": "NEW",
-    "Used": "USED",
-    "Refurbished": "REFURBISHED",
-    "For parts or not working": "FOR_PARTS_OR_NOT_WORKING"
-}
-
-# Sort options mapping
-SORT_MAP: Dict[str, str] = {
-    "Best Match": "bestMatch",
-    "Price: Low to High": "price",
-    "Price: High to Low": "-price",
-    "Time: ending soonest": "endTime",
-    "Time: newly listed": "newlyListed"
-}
-
 ebay_api = EbayAPI()
 cart = Cart()
-
 
 if "cart_items" not in st.session_state:
     st.session_state.cart_items = []
@@ -411,11 +279,16 @@ def build_search_query() -> str:
             return ""
             
         if st.session_state.selected_category == "All Categories":
-            return ""
+            return st.session_state.category_search if "category_search" in st.session_state else ""
         
         query = st.session_state.selected_category
         if st.session_state.selected_subcategory:
             query += f" {st.session_state.selected_subcategory}"
+        
+        # Add category search term if it exists
+        if "category_search" in st.session_state and st.session_state.category_search:
+            query += f" {st.session_state.category_search}"
+            
         return query
     except Exception as e:
         logger.error(f"Error building search query: {str(e)}")
@@ -492,9 +365,24 @@ def show_ebay_search_form() -> None:
             col1, col2 = st.columns(2, gap="large")
             
             with col1:
-                st.markdown("Choose Category")
-                if st.button(get_button_text(), key="main_category_button"):
-                    category_dialog()
+                st.markdown("""
+                    <style>
+                    div[data-testid="stButton"] button {
+                        height: 2em;
+                        width: 100%;
+                        white-space: normal;
+                        padding: 0.5em;
+                    }
+                    </style>
+                    """, unsafe_allow_html=True)
+                col_button, col_input = st.columns([1, 3], gap="small")
+                with col_button:
+                    st.markdown("Choose Category")
+                    if st.button(get_button_text(), key="main_category_button"):
+                        category_dialog()
+                with col_input:
+                    st.markdown("")
+                    st.text_input("Search within category", key="category_search", placeholder="Enter search term...")
                 
                 condition = st.selectbox(
                     "Condition",
@@ -571,7 +459,7 @@ def show_search_results() -> None:
     if "search_results" not in st.session_state:
         st.session_state.search_results = []
     st.session_state.search_results_string = get_data_string()
-    print(st.session_state.search_results_string)
+    # print(st.session_state.search_results_string)
 
         
     sort_by = st.selectbox("Sort by", options=list(SORT_MAP.keys()), index=0)
