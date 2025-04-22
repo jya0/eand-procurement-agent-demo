@@ -2,12 +2,14 @@ import streamlit as st
 from streamlit_navigation_bar import st_navbar
 from streamlit_extras.bottom_container import bottom
 
-
 st.set_page_config(
     layout="wide",
     page_icon="assets/eand-logo/small/Red/e&-lockup_Enterprise_engl_vert_red_rgb-cropped.svg"
 )
 
+
+with open('.streamlit/style.css') as f:
+    st.markdown(f'<style>{f.read()}</style>', unsafe_allow_html=True)
 
 ALL_PAGES = [
     st.Page(
