@@ -55,5 +55,4 @@ show_header(
     "Track communications and negotiation progress in the real-time dashboard, then finalize deals with ease."
 )
 
-
 streamlit_footer()

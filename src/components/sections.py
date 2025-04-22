@@ -305,7 +305,7 @@ def category_dialog() -> None:
         main_category = st.selectbox(
             "Main Category",
             options=list(CATEGORIES.keys()),
-            index=list(CATEGORIES.keys()).index(st.session_state.selected_category),
+            index=0,  # Always start with first category
             key="dialog_main_category_select"
         )
         
@@ -315,8 +315,7 @@ def category_dialog() -> None:
             subcategory = st.selectbox(
                 "Subcategory",
                 options=CATEGORIES[main_category],
-                index=0 if not st.session_state.selected_subcategory else 
-                      CATEGORIES[main_category].index(st.session_state.selected_subcategory),
+                index=0,  # Always start with first subcategory
                 key="dialog_subcategory_select"
             )
         
@@ -475,6 +474,101 @@ def show_search_results() -> None:
     show_pagination(st.session_state.page, total_pages)
 
 
+@st.dialog("Email Template")
+def show_email_dialog(supplier: Dict[str, Any]) -> None:
+    """Display the email template dialog for a specific supplier."""
+    try:
+        if not supplier:
+            st.error("No supplier data available")
+            return
+            
+        st.markdown("### Email Template")
+        
+        # Email subject
+        subject = st.text_input(
+            "Subject",
+            value=f"Inquiry about {supplier.get('title', 'product')} - AMPA Procurement Platform",
+            key=f"email_subject_{supplier.get('id', hash(str(supplier)))}"
+        )
+        
+        # Email body template
+        default_body = f"""Dear {supplier.get('seller', 'Supplier')},
+
+I am interested in your product "{supplier.get('title', 'product')}" and would like to discuss potential business opportunities. I found your listing through the AMPA Procurement Platform.
+
+Product Details:
+- {supplier.get('title', 'product')} (Price: AED {float(supplier.get('price', 0)) * 3.65:.2f})
+
+Please provide the following information:
+1. Minimum Order Quantity (MOQ)
+2. Lead Time
+3. Payment Terms
+4. Shipping Options and Costs
+5. Product Specifications and Certifications
+
+Looking forward to your response.
+
+Best regards,
+[Your Name]
+AMPA Procurement Platform User
+"""
+        
+        body = st.text_area(
+            "Email Body",
+            value=default_body,
+            height=300,
+            key=f"email_body_{supplier.get('id', hash(str(supplier)))}"
+        )
+        
+        # Email template buttons
+        col1, col2 = st.columns(2)
+        with col1:
+            if st.button("Send Email", key=f"send_email_button_{supplier.get('id', hash(str(supplier)))}"):
+                # Here you would implement the actual email sending logic
+                st.success("Email has been sent successfully!")
+                st.rerun()
+        with col2:
+            if st.button("Cancel", key=f"cancel_email_button_{supplier.get('id', hash(str(supplier)))}"):
+                st.rerun()
+                
+    except Exception as e:
+        logger.error(f"Error in email dialog: {str(e)}")
+        st.error(f"An error occurred while preparing the email template: {str(e)}")
+
 def show_cart() -> None:
     """Display the shopping cart contents"""
-    cart.display()
+    if not cart.items:
+        st.info("Your cart is empty")
+        return
+        
+    st.header("Shopping Cart")
+    
+    total_price = 0
+    for i, item in enumerate(cart.items):
+        with st.container(border=True):
+            col1, col2 = st.columns([3, 2])
+            
+            with col1:
+                st.markdown(item["title"])
+                st.markdown(f"👤 **Seller:** {item['seller']}")
+                st.markdown(f"**Condition:** {item['condition']}")
+                st.markdown(f"⭐ **Rating:** {item.get('rating', 'Unknown')}")
+            
+            with col2:
+                try:
+                    price = float(item['price']) * 3.65
+                    total_price += price
+                    st.metric("💰 **Price**", f"AED {price:.2f}")
+                except (ValueError, TypeError):
+                    st.metric("💰 **Price**", "N/A")
+
+                # Replace rating with Contact button
+                if st.button("Contact", key=f"contact_supplier_{i}"):
+                    show_email_dialog(item)
+                
+                if st.button("Remove", key=f"remove_from_cart_{i}"):
+                    cart.remove_item(item.get('id', hash(item['title'])))
+                    st.rerun()
+    
+    st.divider()
+    st.metric("Total", f"AED {total_price:.2f}")
