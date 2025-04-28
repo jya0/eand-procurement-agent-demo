@@ -46,15 +46,55 @@ def show_image(image_path: str) -> None:
 
 
 def show_ebay_card(item: Dict[str, Any]) -> None:
-    with st.container(border=True, height=600):
-        st.header(f"👤 {item['seller']}")
+    with st.container(border=True):
+        st.markdown("""
+            <style>
+                div[data-testid="stContainer"] {
+                    background: linear-gradient(135deg, 
+                        rgba(26, 26, 26, 0.95) 0%,
+                        rgba(75, 15, 30, 0.95) 50%,
+                        rgba(26, 26, 26, 0.95) 100%
+                    );
+                    border: 1px solid #D4AF37;
+                    border-radius: 0.5rem;
+                    padding: 1rem;
+                    margin-bottom: 1rem;
+                    transition: all 0.3s ease;
+                    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+                }
+                div[data-testid="stContainer"]:hover {
+                    transform: translateY(-5px);
+                    box-shadow: 0 10px 20px rgba(212, 175, 55, 0.3);
+                    border: 1px solid #D4AF37;
+                }
+                div[data-testid="stMetric"] {
+                    background: linear-gradient(135deg, 
+                        rgba(139, 0, 0, 0.3) 0%,
+                        rgba(75, 15, 30, 0.3) 100%
+                    );
+                    border: 1px solid #D4AF37;
+                    border-radius: 0.5rem;
+                    padding: 0.5rem;
+                }
+                div[data-testid="stMarkdown"] {
+                    color: #FFF5E6;
+                }
+                h1, h2, h3, h4 {
+                    color: #FFF5E6;
+                    border-bottom: 2px solid #D4AF37;
+                    padding-bottom: 0.5rem;
+                }
+            </style>
+        """, unsafe_allow_html=True)
+        
+        st.header(f"👤 {item['seller']}", divider="red")
             
         with st.container():
             col1, col2, col3 = st.columns([1, 8, 1], gap='small')
             with col2:
                 show_image(item["image"])
         
-        st.markdown(f"<h4>{item['title']}</h4>", unsafe_allow_html=True)
+        st.markdown(f"<h4 style='color: #FFF5E6;'>{item['title']}</h4>", unsafe_allow_html=True)
         
         col1, col2 = st.columns([2, 1], gap="small")
         with col1:
@@ -88,9 +128,49 @@ def show_ebay_card(item: Dict[str, Any]) -> None:
 
 
 def show_supplier_card(supplier: Dict[str, Any]) -> None:
-    with st.container(border=True, height=400):
+    with st.container(border=True):
+        st.markdown("""
+            <style>
+                div[data-testid="stContainer"] {
+                    background: linear-gradient(135deg, 
+                        rgba(26, 26, 26, 0.95) 0%,
+                        rgba(75, 15, 30, 0.95) 50%,
+                        rgba(26, 26, 26, 0.95) 100%
+                    );
+                    border: 1px solid #D4AF37;
+                    border-radius: 0.5rem;
+                    padding: 1rem;
+                    margin-bottom: 1rem;
+                    transition: all 0.3s ease;
+                    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+                }
+                div[data-testid="stContainer"]:hover {
+                    transform: translateY(-5px);
+                    box-shadow: 0 10px 20px rgba(212, 175, 55, 0.3);
+                    border: 1px solid #D4AF37;
+                }
+                div[data-testid="stMetric"] {
+                    background: linear-gradient(135deg, 
+                        rgba(139, 0, 0, 0.3) 0%,
+                        rgba(75, 15, 30, 0.3) 100%
+                    );
+                    border: 1px solid #D4AF37;
+                    border-radius: 0.5rem;
+                    padding: 0.5rem;
+                }
+                div[data-testid="stMarkdown"] {
+                    color: #FFF5E6;
+                }
+                h1, h2, h3, h4 {
+                    color: #FFF5E6;
+                    border-bottom: 2px solid #D4AF37;
+                    padding-bottom: 0.5rem;
+                }
+            </style>
+        """, unsafe_allow_html=True)
+        
         with st.container():
-            st.header(supplier["name"])
+            st.header(supplier["name"], divider="red")
             show_image(supplier["image"])
         with st.container():
             st.caption(f"📍 {supplier['location']}")
@@ -108,6 +188,22 @@ def show_supplier_card(supplier: Dict[str, Any]) -> None:
 
 def show_items_grid(items: List[Dict[str, Any]]) -> None:
     with st.container(border=True):
+        st.markdown("""
+            <style>
+                div[data-testid="stContainer"] {
+                    background: linear-gradient(135deg, 
+                        rgba(26, 26, 26, 0.95) 0%,
+                        rgba(75, 15, 30, 0.95) 50%,
+                        rgba(26, 26, 26, 0.95) 100%
+                    );
+                    border: 1px solid #D4AF37;
+                    border-radius: 0.5rem;
+                    padding: 1rem;
+                    margin-bottom: 1rem;
+                }
+            </style>
+        """, unsafe_allow_html=True)
+        
         for i in range(0, len(items), 3):
             cols = st.columns(3)
             row_items = items[i:i + 3]
@@ -541,7 +637,40 @@ def show_cart() -> None:
         st.info("Your cart is empty")
         return
         
-    st.header("Shopping Cart")
+    st.header("Shopping Cart", divider="red")
+    
+    st.markdown("""
+        <style>
+            div[data-testid="stContainer"] {
+                background: linear-gradient(135deg, 
+                    rgba(26, 26, 26, 0.95) 0%,
+                    rgba(75, 15, 30, 0.95) 50%,
+                    rgba(26, 26, 26, 0.95) 100%
+                );
+                border: 1px solid #D4AF37;
+                border-radius: 0.5rem;
+                padding: 1rem;
+                margin-bottom: 1rem;
+            }
+            div[data-testid="stMetric"] {
+                background: linear-gradient(135deg, 
+                    rgba(139, 0, 0, 0.3) 0%,
+                    rgba(75, 15, 30, 0.3) 100%
+                );
+                border: 1px solid #D4AF37;
+                border-radius: 0.5rem;
+                padding: 0.5rem;
+            }
+            div[data-testid="stMarkdown"] {
+                color: #FFF5E6;
+            }
+            h1, h2, h3, h4 {
+                color: #FFF5E6;
+                border-bottom: 2px solid #D4AF37;
+                padding-bottom: 0.5rem;
+            }
+        </style>
+    """, unsafe_allow_html=True)
     
     total_price = 0
     for i, item in enumerate(cart.items):
@@ -549,7 +678,7 @@ def show_cart() -> None:
             col1, col2 = st.columns([3, 2])
             
             with col1:
-                st.markdown(item["title"])
+                st.markdown(f"<h4 style='color: #FFF5E6;'>{item['title']}</h4>", unsafe_allow_html=True)
                 st.markdown(f"👤 **Seller:** {item['seller']}")
                 st.markdown(f"**Condition:** {item['condition']}")
                 st.markdown(f"⭐ **Rating:** {item.get('rating', 'Unknown')}")
