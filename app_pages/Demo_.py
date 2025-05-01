@@ -3,28 +3,16 @@ from src.components.sections import show_header, show_search_results, show_ebay_
 from src.components.chatbot import show_chatbot
 from src.components.footer import streamlit_footer
 
-
-# section_header(
-#     "Input Your Criteria",
-#     "Use our simple form to specify product requirements, budget, and delivery preferences."
-# )
-
-st.header("Input Your Criteria", divider=True)
+st.header("Input Your Criteria")
 with st.expander("Use our simple form to specify product requirements, budget, and delivery preferences.", expanded=True):
-    # show_search_form()
     show_ebay_search_form()
 
-# section_header(
-#     "Search for Suppliers",
-#     "AMPA searches Alibaba's vast database to find matching suppliers instantly."
-# )
-
-st.header("Search for Suppliers", divider=True)
+st.header("Search for Suppliers")
 with st.expander("AMPA searches Alibaba's vast database to find matching suppliers instantly.", expanded=True):
     show_search_results()
 
 # Add shopping cart display
-st.header("Shopping Cart", divider=True)
+st.header("Shopping Cart")
 with st.expander("View and manage items in your shopping cart"):
     col_cart, col_chat = st.columns([2, 3], gap="small")
     with col_cart:
@@ -32,18 +20,7 @@ with st.expander("View and manage items in your shopping cart"):
     with col_chat:
         show_chatbot()
 
-# section_header(
-#     "Evaluate with Chatbot",
-#     "Ask our AI chatbot for recommendations or details, like \"Which supplier offers the best price-to-quality ratio?\""
-# )
-
-# st.header("Evaluate with Chatbot", divider=True)
-# with st.expander("Ask our AI chatbot for recommendations or details, like \"Which supplier offers the best price-to-quality ratio?\""):
-#     show_chatbot()
-
-st.header("Ask your AI to Find the Best Supplier", divider=True)
-# show_chatbot()
-
+st.header("Ask your AI to Find the Best Supplier")
 
 show_header(
     "Automate Communications",
@@ -54,6 +31,5 @@ show_header(
     "Monitor and Finalize",
     "Track communications and negotiation progress in the real-time dashboard, then finalize deals with ease."
 )
-
 
 streamlit_footer()

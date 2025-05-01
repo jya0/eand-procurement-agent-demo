@@ -296,14 +296,15 @@ def show_chatbot():
             key="textArea",
             css_styles="""
             {
-                border: 1px solid rgba(255, 75, 75, 1);
+                border: 1px solid #D4AF37;
                 border-radius: 0.5rem;
                 padding: calc(1em - 1px);
-                background-color: white;
+                background-color: rgba(26, 26, 26, 0.8);
                 max-height: 450px;
                 height: 450px;
                 min-height: 450px;
                 overflow: scroll;
+                color: #FFF5E6;
             }
             """,)
         with textArea:
@@ -319,10 +320,6 @@ def show_chatbot():
 
             chatbot = st.session_state.chatbot_client
 
-            # # Initialize chat history and selected model
-            # if "messages" not in st.session_state:
-            #     st.session_state.messages = []
-
             # Display chat messages stored in history on app rerun
             with textArea:
                 for message in st.session_state.messages:
@@ -331,9 +328,34 @@ def show_chatbot():
                         with st.chat_message(message["role"], avatar=avatar):
                             st.markdown(message["content"])
 
-            with open('assets/styles/chat_input.css') as f:
-                css = f.read()
-                st.markdown(f'<style>{css}</style>', unsafe_allow_html=True)
+            # Add custom styling for chat input
+            st.markdown("""
+                <style>
+                    .stChatInputContainer {
+                        background-color: rgba(26, 26, 26, 0.8);
+                        border: 1px solid #D4AF37;
+                        border-radius: 0.5rem;
+                        padding: 1rem;
+                    }
+                    .stChatInputContainer textarea {
+                        background-color: rgba(255, 255, 255, 0.1);
+                        color: #FFF5E6;
+                        border: 1px solid #D4AF37;
+                    }
+                    .stChatInputContainer textarea:focus {
+                        border-color: #D4AF37;
+                        box-shadow: 0 0 0 2px rgba(212, 175, 55, 0.2);
+                    }
+                    .stChatMessage {
+                        background-color: rgba(26, 26, 26, 0.8);
+                        border: 1px solid #D4AF37;
+                        border-radius: 0.5rem;
+                        padding: 1rem;
+                        margin-bottom: 1rem;
+                    }
+                </style>
+            """, unsafe_allow_html=True)
+
             # Handle user input
             if prompt := st.chat_input("Enter your prompt here...", max_chars=4200):
                 st.session_state.messages.append(
@@ -353,7 +375,6 @@ def show_chatbot():
                     {"role": "assistant", "content": response}
                 )
                 st.rerun()
-                # st.write(st.session_state.messages)
 
         except Exception as e:
             st.error(f"An unexpected error occurred: {str(e)}", icon="🚨")
